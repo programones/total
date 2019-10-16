@@ -60,9 +60,9 @@
           <!--2. 按条件查找 -->
           <el-drawer title="选择查询" :visible.sync="querytable" direction="rtl" size="100%">
             <div class="queryByCondition">
-              <p class="atips">1.选择省：</p>
+              <p class="atips">请从上而下选择查询：</p>
               <div class="chioeseQuery">
-                <el-select v-model="choeseprovince" placeholder="请选择省份"  @change="gethttpProvince(choeseprovince)">
+                <el-select v-model="choeseprovince" placeholder="请选择省份"  @change="gethttpProvince(choeseprovince)" size="small">
                   <el-option
                     v-for="item in provinces"
                     :key="item.ask_data"
@@ -72,9 +72,9 @@
                   ></el-option>
                 </el-select>
               </div>
-              <p class="atips">2.选择市</p>
+              <!-- <p class="atips">2.选择市</p> -->
               <div class="chioeseQuery">
-                <el-select v-model="choesecities" placeholder="请选择市"  @change="gethttpCities(choesecities)">
+                <el-select v-model="choesecities" placeholder="请选择市"  @change="gethttpCities(choesecities)" size="small">
                   <el-option
                     v-for="item in cities"
                     :key="item.ask_data"
@@ -83,9 +83,9 @@
                   ></el-option>
                 </el-select>
               </div>
-              <p class="atips">3.选择区</p>
+              <!-- <p class="atips">3.选择区</p> -->
               <div class="chioeseQuery">
-                <el-select v-model="choeseArea" placeholder="请选择市区" @change="gethttpAreas(choeseArea)">
+                <el-select v-model="choeseArea" placeholder="请选择市区" @change="gethttpAreas(choeseArea)" size="small">
                   <el-option
                     v-for="item in areas"
                      :key="item.ask_data"
@@ -94,9 +94,9 @@
                   ></el-option>
                 </el-select>
               </div>
-              <p class="atips">4.选择学校</p>
+              <!-- <p class="atips">4.选择学校</p> -->
               <div class="chioeseQuery">
-                <el-select v-model="choeseSchool" placeholder="请选择学校" @change="gethttpSchool(choeseSchool)">
+                <el-select v-model="choeseSchool" placeholder="请选择学校" @change="gethttpSchool(choeseSchool)" size="small">
                   <el-option
                     v-for="item in schools"
                      :key="item.ask_data"
@@ -105,9 +105,9 @@
                   ></el-option>
                 </el-select>
               </div>
-              <p class="atips">5.选择班级</p>
+              <!-- <p class="atips">5.选择班级</p> -->
               <div class="chioeseQuery">
-                <el-select v-model="choeseClass" placeholder="请选择班级">
+                <el-select v-model="choeseClass" placeholder="请选择班级" size="small">
                   <el-option
                     v-for="item in classes"
                      :key="item.ask_data"
@@ -115,9 +115,9 @@
                      :value="item.ask_data"
                   ></el-option>
                 </el-select>
-                <p class="atips">6.选择姓名</p>
+                <!-- <p class="atips">6.选择姓名</p> -->
                 <div class="chioeseQuery">
-                  <el-select v-model="choeseName" placeholder="请选择姓名">
+                  <el-select v-model="choeseName" placeholder="请选择姓名" size="small">
                     <el-option
                       v-for="item in names"
                      :key="item.ask_data"
@@ -265,10 +265,12 @@
                  :data="beforehandTable"
                  border
                  size="mini"
-                >
+                 >
                  <el-table-column
                    prop="name"
                    label="姓名"
+                     width="60px"
+                      fixed
                     >
                  </el-table-column>
                  <el-table-column
@@ -279,6 +281,17 @@
                  <el-table-column
                    prop="school"
                    label="学校">
+                 </el-table-column>
+                 <el-table-column
+                   prop="time"
+                   label="预约时段"
+                   width="120px">
+                   <el-tag type="warning" size="mini">11:00-11:30</el-tag>
+                   <el-tag type="warning" size="mini">11:00-11:30</el-tag>
+                   <el-tag type="warning" size="mini">11:00-11:30</el-tag>
+                   <el-tag type="warning" size="mini">11:00-11:30</el-tag>
+                   <el-tag type="warning" size="mini">11:00-11:30</el-tag>
+                   <el-tag type="warning" size="mini">11:00-11:30</el-tag>
                  </el-table-column>
                  <el-table-column
                    prop="price"
@@ -298,8 +311,83 @@
         </div> 
         </el-tab-pane>
         <!-- 六、订单回执 -->
-        <el-tab-pane label="预约回执" name="5">
-          预约回执
+        <el-tab-pane label="预约回执" name="5">          
+            <div class="orderSuccess">
+                <!-- <p class="orderTitle">预约回执</p> -->
+              <el-collapse
+                 v-model="activeNames"
+                  >
+                 <el-collapse-item title="个人信息" name="1">
+                 <el-table
+                    :data="beforehandTable"
+                    border
+                    size="mini"
+                    >
+                  <el-table-column
+                   prop="name"
+                   label="姓名"
+                     width="60px"
+                      fixed
+                    >
+                 </el-table-column>
+                 <el-table-column
+                   prop="class"
+                   label="班级"
+                   >
+                 </el-table-column>
+                 <el-table-column
+                   prop="school"
+                   label="学校">
+                 </el-table-column>
+                 <el-table-column
+                   prop="time"
+                   label="预约手机"
+                   width="120px">
+                   <el-tag type="success" size="mini">15179175376</el-tag>
+                  
+                 </el-table-column>
+                 <el-table-column
+                   prop="price"
+                   label="订单号">
+                 </el-table-column>
+               </el-table> 
+                    </el-collapse-item>
+                <el-collapse-item title="时段信息" name="2">
+                     <div class="orderTag">
+                    <el-tag type="warning" size="mini">11:00-11:30</el-tag>
+                   <el-tag type="warning" size="mini">11:00-11:30</el-tag>
+                   <el-tag type="warning" size="mini">11:00-11:30</el-tag>
+                   <el-tag type="warning" size="mini">11:00-11:30</el-tag>
+                   <el-tag type="warning" size="mini">11:00-11:30</el-tag>
+                   <el-tag type="warning" size="mini">11:00-11:30</el-tag>
+                   </div>
+                  </el-collapse-item>   
+                <el-collapse-item title="二维码及观看密码" name="3">
+                      <el-table
+                    :data="returnImg"
+                    border
+                    size="mini"
+                    >
+                  <el-table-column
+                   
+                   label="二维码"
+                    prop="url"     
+                    >
+                     <div class="thatcode" @click="showDrawer">
+                       <img :src=returnImg[0].url alt="" width="130" height="130">  
+                       <p>点击放大</p>
+                     </div>
+                   
+                 </el-table-column>
+                 <el-table-column
+                   prop="passworld"
+                   label="密码"
+                   >
+                 </el-table-column>                                          
+               </el-table> 
+                  </el-collapse-item>  
+              </el-collapse>               
+             </div>     
           <el-button size="small" @click="top">上一步</el-button>
         </el-tab-pane>
       </el-tabs>
@@ -318,20 +406,25 @@
         </span>
       </el-dialog>
     </div>
-    <!-- 开关 -->
-    <!-- <el-button style="margin-top: 12px;" @click="next" type="danger">下一步</el-button>
-    <el-button style="margin-top: 12px;" @click="top">上一步</el-button>-->
-
-    <!-- 下拉选择框 -->
-    <!-- <el-select v-model="value" placeholder="请选择">
-      <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
-    </el-select>-->
+     <!-- 二维码抽屉 -->
+      <el-drawer
+         title="二维码"
+         :visible.sync="QRcode"
+         direction="rtl"
+         size="100%"
+       >
+        <div class="drawerImg">
+         <img :src=returnImg[0].url alt="" width="250" height="250">
+         <div class="btnClose"><el-button @click="showDrawer">关 闭</el-button> </div>
+        </div>
+      </el-drawer>
   </div>
 </template>
 
 <script>
-import { log } from 'util';
+// import { log } from 'util';
 import {http} from '../http/http.js'
+import {getsixstring} from '../api/randomstr'
 export default {
   name: "HelloWorld",
   
@@ -447,6 +540,7 @@ export default {
       queryExaTable: false,
       querytable: false,
       accurateInputValue: "",
+      activeNames:['1','2','3'],
       QueryRuesult: [
       
       ],
@@ -465,11 +559,18 @@ export default {
       names:[],
       totalprice:0.01,
       beforehandTable:[{
-        name:'小明',
+        name:'小明明',
         class:'初三（2）班',
         school:'实验中学',
-        price:0.01
-      }]
+        price:0.01,
+        time:"11:00-12:00"
+
+      }],
+      returnImg:[{
+        url:'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1571219823125&di=c59af7041a911b6bdb8b26dd892c41be&imgtype=0&src=http%3A%2F%2Fimg3.cache.netease.com%2Fgame%2F2013%2F11%2F26%2F20131126143638f53f4.png',
+        passworld:'15fsf5163515ad'
+      }],
+      QRcode:false,//二维码抽屉
     };
   },
 
@@ -480,10 +581,12 @@ export default {
       //先转为数字类型然后再转为字符串类型赋值
       let nextNumber = +this.active1;
       this.active1 = nextNumber + 1 + "";
+      document.documentElement.scrollTop=0;
     },
     top() {
       let topNumber = +this.active1;
       this.active1 = topNumber - 1 + "";
+      document.documentElement.scrollTop=0;
     },
      //输入电话号码的核实
      checkPhone(){
@@ -677,6 +780,10 @@ export default {
         http.findClass(classFind).then(res=>{
           this.classes=res.data[0].infos           
         })
+      },
+      showDrawer(){
+        this.QRcode=! this.QRcode
+        // console.log(1111111111111111);       
       }
 
 
@@ -691,7 +798,9 @@ export default {
       //  console.log(res);
        this.provinces=res.data[0].infos      
      })
-
+      // 生成6为随机码
+      // window.console.log(getsixstring());
+      
   //选择中的市返回查询
       //  var choisecity={
       //    ask:2,
@@ -742,18 +851,18 @@ export default {
         // })
 
   //按条件查找人名返回
-          // var personFind = {
-          //        ask:2,
-          //        ask_word:"class1",
-          //        ask_content:"初三（1）班",
-          //        city:"深圳市",
-          //        province:"广东省" ,
-          //        district:"龙岗区",
-          //        school:"某某实验中学",       
-          // }
-          // http.findPerson(personFind).then(res=>{
-          //   console.log(res);          
-          // })
+          var personFind = {
+                 ask:2,
+                 ask_word:"class1",
+                 ask_content:"初三（1）班",
+                 city:"深圳市",
+                 province:"广东省" ,
+                 district:"龙岗区",
+                 school:"某某实验中学",       
+          }
+          http.findPerson(personFind).then(res=>{
+            console.log(res);          
+          })
 
   },
   watch:{
@@ -801,6 +910,7 @@ export default {
 
 .queryByCondition {
   padding-left: 20px;
+  /* height: 600px; */
 }
 .queryByCondition .chioeseQuery {
   margin-top: 10px;
@@ -882,6 +992,38 @@ export default {
   .beforehandOrder .payWays{
     margin: 0 0 10px 10px;
   }
+  /* 订单回执处时间排列 */
+  .orderSuccess {
+    margin-bottom: 10px;
+  }
+  .orderSuccess .orderTag{
+      display: flex;
+       flex-wrap: wrap;
+       justify-content: space-around;
+  }
+  .orderSuccess .orderTitle {
+    line-height: 20px;
+  }
+  .orderSuccess .orderTag span {
+     margin-bottom: 10px;
+  }
+  .orderSuccess .thatcode img {
+    display: block;
+    margin: 0 auto;
+  }
+   .orderSuccess .thatcode p {
+     text-align: center;
+   }
+  /* 抽屉二维码定位 */
+   .drawerImg img{
+      margin: 0 auto;
+      display: block;
+   }
+   .drawerImg .btnClose{
+     margin-top: 10%;
+     margin-left: 40%;
+    
+   }
 .el-row {
   margin-bottom: 20px;
   line-height: 33px;
