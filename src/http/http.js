@@ -1,6 +1,7 @@
 import axios from 'axios'
 export const http = axios.create({
-    baseURL: 'http://127.168.2.199/'
+    // baseURL: 'http://127.168.2.199/'
+    baseURL: 'http://127.204.50.219/'
   })
   //人名查询请求
   let search = 'getdata_anchor.php'

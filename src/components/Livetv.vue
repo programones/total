@@ -166,7 +166,7 @@
 
             <!-- 单选框 -->
 
-            <el-checkbox v-model="checked" @click.native="cliscksure">同 意</el-checkbox>
+            <el-checkbox v-model="checked" @click.native="cliscksure">同意相关条款</el-checkbox>
             <!-- 确认按钮 -->
 
             <div class="agreeButton">
@@ -422,7 +422,7 @@
 </template>
 
 <script>
-// import { log } from 'util';
+import { log } from 'util';
 import {http} from '../http/http.js'
 import {getsixstring} from '../api/randomstr'
 export default {
@@ -441,96 +441,114 @@ export default {
          {
           checked: false,
           value: "09:00-09:30",
-          type: "info"
+          type: "info",
+          price:0.01
         },
          {
           checked: false,
           value: "09:30-10:00",
-          type: "info"
+          type: "info",
+          price:0.01
         },
         {
           checked: false,
           value: "10:00-10:30",
-          type: "info"
+          type: "info",
+          price:0.01
         },
          {
           checked: false,
           value: "10:30-11:00",
-          type: "info"
+          type: "info",
+          price:0.01
         },
          {
           checked: false,
           value: "11:00-11:30",
-          type: "info"
+          type: "info",
+          price:0.01
         },
        {
           checked: false,
           value: "11:30-12:00",
-          type: "info"
+          type: "info",
+          price:0.01
         },
       ],
       switchioesTwo:[
            {
           checked: false,
           value: "14:00-14:30",
-          type: "info"
+          type: "info",
+          price:0.01
         },
          {
           checked: false,
           value: "14:30-15:00",
-          type: "info"
+          type: "info",
+          price:0.01
         },
         {
           checked: false,
           value: "15:00-15:30",
-          type: "info"
+          type: "info",
+          price:0.01
         },
          {
           checked: false,
           value: "15:30-16:00",
-          type: "info"
+          type: "info",
+          price:0.01
         },
          {
           checked: false,
           value: "16:00-16:30",
-          type: "info"
+          type: "info",
+          price:0.01
         },
        {
           checked: false,
           value: "16:30-14:00",
-          type: "info"
+          type: "info",
+          price:0.01
         },
       ],
       switchioesThree:[
            {
           checked: false,
           value: "18:00-18:30",
-          type: "info"
+          type: "info",
+          price:0.01
         },
          {
           checked: false,
           value: "18:30-19:00",
-          type: "info"
+          type: "info",
+          price:0.01
         },
         {
           checked: false,
           value: "19:00-19:30",
-          type: "info"
+          type: "info",
+          price:0.01
         },
          {
           checked: false,
           value: "19:30-20:00",
-          type: "info"
+          type: "info",
+          price:0.01
         },
          {
           checked: false,
           value: "21:00-21:30",
-          type: "info"
+          type: "info",
+          price:0.01
         },
        {
           checked: false,
           value: "21:30-22:00",
-          type: "info"
+          type: "info",
+          price:0.01
         },
       ],
       tabPosition: "top",
@@ -557,7 +575,7 @@ export default {
       schools:[],
       classes:[],
       names:[],
-      totalprice:0.01,
+      totalprice:0.00,
       beforehandTable:[{
         name:'小明明',
         class:'初三（2）班',
@@ -571,6 +589,7 @@ export default {
         passworld:'15fsf5163515ad'
       }],
       QRcode:false,//二维码抽屉
+  
     };
   },
 
@@ -630,20 +649,24 @@ export default {
         //时间选中状态的改变的规则
          changeRules(i,timegrop){
               let storearr=[]
-          timegrop.forEach(item=>storearr.push(item.type)
-           )
-          //  console.log(storearr);
-           let choeseindex=  storearr.findIndex((value, index, arr)=>{
-             return value=='primary'
-           })
-           let unchoeseindex=  storearr.findIndex((value, index, arr)=>{
-             return value=="info"
-           })
-            if(i==-1){
-               let choeseindex = i
-            }         
+          // timegrop.forEach(item=>storearr.push(item.type)
+          //  )
+          
+           let choeseindex=  timegrop.findIndex((value, index, arr)=>{
+             return value.type=='primary'
+           }) 
+            // console.log(choeseindex);
+            
+          //  let unchoeseindex=  storearr.findIndex((value, index, arr)=>{
+          //    return value=="info"
+          //  })
+            if(choeseindex==-1){
+              //  let choeseindex = i
+              timegrop[i].type="info"
+            }else{  
+              
           //  console.log("选中的第一个下标为----"+choeseindex,'第多次选中的下标为---'+i,'第一个没有选中的下标为---'+unchoeseindex,this.switchioes.length);
-           for(let k=0;k<this.switchioes.length;k++){
+           for(let k=0;k<timegrop.length;k++){
               if(k!=choeseindex){
                  timegrop[k].type="info"
               }
@@ -651,15 +674,43 @@ export default {
            for(let j=choeseindex;j<=i;j++){
             timegrop[j].type="primary"
            }
+            }
+              //总价的计算
+                  let priceArr=[]
+                  let priceAll=0
+               this.switchioes.forEach(item=> {
+               if(item.type=="primary"){
+                 priceArr.push(item)
+               }
+               })
+               this.switchioesTwo.forEach(item=> {
+               if(item.type=="primary"){
+                 priceArr.push(item)
+               }
+               }) 
+                 this.switchioesThree.forEach(item=> {
+               if(item.type=="primary"){
+                 priceArr.push(item)
+               }
+               })  
+            priceArr.forEach(item=>{
+              priceAll+=(item.price*100)
+              
+            })
+          //  priceAll= priceArr[0].price*(priceArr.length)
+            // console.log(priceAll/100);
+            this.totalprice=priceAll/100
+            this.beforehandTable[0].price=this.totalprice
          },
           //改变的选中颜色
-          changrColor(value){
+         changrColor(value){
        if (value.type == "info") {
         value.type = "primary";
         } else {
         value.type = "info";
        }
-    },
+        
+       },
 
     //人名选择查找
     findByNanme(){
@@ -824,7 +875,7 @@ export default {
           
       //   })
 
-  //按条件查找学校返回值
+               //按条件查找学校返回值
           //  var schoolFind={
           //    ask:2,
           //    ask_word:"district",
@@ -836,7 +887,7 @@ export default {
           //    console.log(res);
 
           //  })
-  //按条件查找班级返回值
+                     //按条件查找班级返回值
         // var classFind={
         //       ask:2,
         //      ask_word:"school",
@@ -850,19 +901,19 @@ export default {
           
         // })
 
-  //按条件查找人名返回
-          var personFind = {
-                 ask:2,
-                 ask_word:"class1",
-                 ask_content:"初三（1）班",
-                 city:"深圳市",
-                 province:"广东省" ,
-                 district:"龙岗区",
-                 school:"某某实验中学",       
-          }
-          http.findPerson(personFind).then(res=>{
-            console.log(res);          
-          })
+                  //按条件查找人名返回
+          // var personFind = {
+          //        ask:2,
+          //        ask_word:"class1",
+          //        ask_content:"初三（1）班",
+          //        city:"深圳市",
+          //        province:"广东省" ,
+          //        district:"龙岗区",
+          //        school:"某某实验中学",       
+          // }
+          // http.findPerson(personFind).then(res=>{
+          //   console.log(res);          
+          // })
 
   },
   watch:{
