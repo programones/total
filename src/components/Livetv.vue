@@ -286,6 +286,7 @@
                    prop="time"
                    label="预约时段"
                    width="120px">
+                   <!-- <p v-if="totalprice==0">未选择时段</p> -->
                    <el-tag type="warning" size="mini" v-for="item in orderTimeArr" :key="item.value">{{item.value}}</el-tag>
                    
                  </el-table-column>
@@ -417,7 +418,7 @@ import { log } from 'util';
 import {http} from '../http/http.js'
 import {getsixstring} from '../api/randomstr'
 export default {
-  name: "HelloWorld",
+  name: "appointment",
   
   data() {
     return {
@@ -698,7 +699,7 @@ export default {
             })
             //将选中的信息赋值给data中的数组       
             this.orderTimeArr=priceArr 
-            this.beforehandTable[0].time="1"
+            this.beforehandTable[0].time="未选中"
              //选中时间后的价格的计算   
             this.totalprice=priceAll/100
             this.beforehandTable[0].price=this.totalprice
