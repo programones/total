@@ -286,12 +286,8 @@
                    prop="time"
                    label="预约时段"
                    width="120px">
-                   <el-tag type="warning" size="mini">11:00-11:30</el-tag>
-                   <el-tag type="warning" size="mini">11:00-11:30</el-tag>
-                   <el-tag type="warning" size="mini">11:00-11:30</el-tag>
-                   <el-tag type="warning" size="mini">11:00-11:30</el-tag>
-                   <el-tag type="warning" size="mini">11:00-11:30</el-tag>
-                   <el-tag type="warning" size="mini">11:00-11:30</el-tag>
+                   <el-tag type="warning" size="mini" v-for="item in orderTimeArr" :key="item.value">{{item.value}}</el-tag>
+                   
                  </el-table-column>
                  <el-table-column
                    prop="price"
@@ -319,7 +315,7 @@
                   >
                  <el-collapse-item title="个人信息" name="1">
                  <el-table
-                    :data="beforehandTable"
+                    :data="orderPersoalIfo"
                     border
                     size="mini"
                     >
@@ -347,19 +343,14 @@
                   
                  </el-table-column>
                  <el-table-column
-                   prop="price"
+                   prop="orderNum"
                    label="订单号">
                  </el-table-column>
                </el-table> 
                     </el-collapse-item>
                 <el-collapse-item title="时段信息" name="2">
                      <div class="orderTag">
-                    <el-tag type="warning" size="mini">11:00-11:30</el-tag>
-                   <el-tag type="warning" size="mini">11:00-11:30</el-tag>
-                   <el-tag type="warning" size="mini">11:00-11:30</el-tag>
-                   <el-tag type="warning" size="mini">11:00-11:30</el-tag>
-                   <el-tag type="warning" size="mini">11:00-11:30</el-tag>
-                   <el-tag type="warning" size="mini">11:00-11:30</el-tag>
+                    <el-tag type="warning" size="mini"  v-for="item in orderTimeArr" :key="item.value">{{item.value}}</el-tag>
                    </div>
                   </el-collapse-item>   
                 <el-collapse-item title="二维码及观看密码" name="3">
@@ -581,13 +572,21 @@ export default {
         class:'初三（2）班',
         school:'实验中学',
         price:0.01,
-        time:"11:00-12:00"
+        time:""
 
+      }],
+      orderPersoalIfo:[{
+        name:'小明明',
+        class:'初三（2）班',
+        school:'实验中学',
+        orderNum:"15179175376fdf55",
+        time:"11:00-12:00"
       }],
       returnImg:[{
         url:'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1571219823125&di=c59af7041a911b6bdb8b26dd892c41be&imgtype=0&src=http%3A%2F%2Fimg3.cache.netease.com%2Fgame%2F2013%2F11%2F26%2F20131126143638f53f4.png',
         passworld:'15fsf5163515ad'
       }],
+      orderTimeArr:[],
       QRcode:false,//二维码抽屉
   
     };
@@ -697,8 +696,10 @@ export default {
               priceAll+=(item.price*100)
               
             })
-          //  priceAll= priceArr[0].price*(priceArr.length)
-            // console.log(priceAll/100);
+            //将选中的信息赋值给data中的数组       
+            this.orderTimeArr=priceArr 
+            this.beforehandTable[0].time="1"
+             //选中时间后的价格的计算   
             this.totalprice=priceAll/100
             this.beforehandTable[0].price=this.totalprice
          },
