@@ -1,6 +1,6 @@
 import axios from 'axios'
 export const http = axios.create({
-    baseURL: 'http://127.168.2.199/'
+    baseURL: 'http://127.168.2.199/' //本机ip
     // baseURL: 'http://129.204.50.219/'
   })
   //人名查询请求

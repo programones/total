@@ -107,7 +107,7 @@
               </div>
               <!-- <p class="atips">5.选择班级</p> -->
               <div class="chioeseQuery">
-                <el-select v-model="choeseClass" placeholder="请选择班级" size="small">
+                <el-select v-model="choeseClass" placeholder="请选择班级" size="small"  @change="gethttpClass(choeseClass)">
                   <el-option
                     v-for="item in classes"
                      :key="item.ask_data"
@@ -117,7 +117,7 @@
                 </el-select>
                 <!-- <p class="atips">6.选择姓名</p> -->
                 <div class="chioeseQuery">
-                  <el-select v-model="choeseName" placeholder="请选择姓名" size="small">
+                  <el-select v-model="choeseName" placeholder="请选择姓名" size="small" @change="lastchangeName(choeseName)">
                     <el-option
                       v-for="item in names"
                      :key="item.ask_data"
@@ -129,14 +129,13 @@
               </div>
             </div>
           </el-drawer>
-
-          <div class="nextStep">
+          <div class="nextStep">           
             <el-button size="small" @click="next">下一步</el-button>
           </div>
         </el-tab-pane>
 
         <!-- 预约table栏 -->
-        <el-tab-pane label="预约" name="2">
+        <el-tab-pane label="预约" name="2" :disabled="value2" lazy>
           <div class="orderPhone">
             <div class="phoneNumber">
               <!-- input手机号码输入框 -->           
@@ -173,6 +172,7 @@
               <el-button :type="buttonType" size="small" @click="checkPhone">确认</el-button>
             </div>
             <div class="ordersteps">
+              <el-divider></el-divider>
               <el-button size="small" @click="top">上一步</el-button>
               <el-button size="small" @click="next">下一步</el-button>
             </div>
@@ -180,7 +180,7 @@
         </el-tab-pane>
 
         <!-- 三、选择时间 -->
-        <el-tab-pane label="时间选择" name="3">
+        <el-tab-pane label="时间选择" name="3" lazy>
           <div class="timeChoese">
                <!-- 卡片区域 -->
               <!-- （1）上午卡片区域 -->
@@ -255,7 +255,7 @@
         </el-tab-pane>
 
         <!-- 五、预订单 -->
-        <el-tab-pane label="预订单" name="4">
+        <el-tab-pane label="预订单" name="4" lazy>
         <div class="beforehandOrder"> 
           预订单
           <div class="tableIfo">
@@ -303,12 +303,13 @@
                  <el-button type="primary" plain size="mini"><i class="iconfont icon-zhifubao"></i>支付宝</el-button>
                   <el-button plain size="small" icon="el-icon-more">其他</el-button>
               </div>
+              <el-divider></el-divider>
           <el-button size="small" @click="top">上一步</el-button>
           <el-button size="small" @click="next">下一步</el-button>
         </div> 
         </el-tab-pane>
         <!-- 六、订单回执 -->
-        <el-tab-pane label="预约回执" name="5">          
+        <el-tab-pane label="预约回执" name="5" lazy>          
             <div class="orderSuccess">
                 <!-- <p class="orderTitle">预约回执</p> -->
               <el-collapse
@@ -731,7 +732,7 @@ export default {
       ask_content:this.accurateInputValue
       }     
        http.findName(param).then(res=>{
-        //  console.log(res);
+         console.log(res);
          
         let findres=res.data[0].infos 
         if(findres==null){
@@ -834,6 +835,30 @@ export default {
           this.classes=res.data[0].infos           
         })
       },
+        //按条件查询班级后返回的姓名
+        gethttpClass(value){
+            var classFind={
+             ask:2,
+             ask_word:"class",
+             ask_content:value,
+             city:this.choesecities,
+             province:this.choeseprovince ,
+             district:this.choeseArea,
+             school:this.choeseSchool
+        }
+        //初始化其子选项
+        this.choeseName=""
+          http.findPerson(classFind).then(res=>{
+          this.names=res.data[0].infos  
+          console.log(this.names);
+                   
+        })
+        },
+         //条件查询后最终人名确定后触发的事件
+         lastchangeName(value){
+            console.log('你的名字是=>',value);
+            
+         },
       showDrawer(){
         this.QRcode=! this.QRcode
         // console.log(1111111111111111);       
@@ -904,18 +929,18 @@ export default {
         // })
 
                   //按条件查找人名返回
-          // var personFind = {
-          //        ask:2,
-          //        ask_word:"class1",
-          //        ask_content:"初三（1）班",
-          //        city:"深圳市",
-          //        province:"广东省" ,
-          //        district:"龙岗区",
-          //        school:"某某实验中学",       
-          // }
-          // http.findPerson(personFind).then(res=>{
-          //   console.log(res);          
-          // })
+          var personFind = {
+                 ask:2,
+                 ask_word:"class",
+                 ask_content:"初三（1）班",
+                 city:"深圳市",
+                 province:"广东省" ,
+                 district:"龙岗区",
+                 school:"实验中心中学",       
+          }
+          http.findPerson(personFind).then(res=>{
+            console.log(res);          
+          })
 
   },
   watch:{
@@ -1024,9 +1049,7 @@ export default {
 #toreturn {
   margin-left: 5px;
 }
-.el-switch__label.is-active span {
-  color: #ccc;
-}
+
 /* 精确查找处表格字体大小 */
 .el-table div {
   font-size: 12px;
