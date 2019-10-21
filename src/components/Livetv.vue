@@ -23,7 +23,7 @@
   <el-step title="步骤 3"></el-step>
     </el-steps>-->
     <div class="navbox">
-      <el-tabs :tab-position="tabPosition" style="height:600px;" v-model="active1">
+      <el-tabs :tab-position="tabPosition" style="height:600px;" v-model="active1" >
         <el-tab-pane label="查询" name="1">
           <!-- 点击显示抽屉栏 -->
           <div class="queryChoose">选择查询方式</div>
@@ -136,7 +136,7 @@
 
         <!-- 预约table栏 -->
         <el-tab-pane label="预约" name="2" :disabled="value2" lazy>
-          <div class="orderPhone">
+          <div class="order-phone">
             <div class="phoneNumber">
               <!-- input手机号码输入框 -->           
               <el-input
@@ -147,15 +147,14 @@
                   suffix-icon="el-icon-phone"
               ></el-input>              
             </div>
-            <div class="checkNumber">             
+            <div class="check-number">             
               <el-input
                 v-model="inputcheckNumber"
                 maxlength="4"
                 placeholder="请输入验证码"
                 style="width:50%"
-              ></el-input>                        
-              <img src="../assets/yzm.jpg" alt width="82px" height="32px" />
-              
+              ></el-input>              
+                 <img src="../assets/yzm.jpg" alt width="82px" height="32px" @click="changeCheckImg"/>                                                
             </div>
             
             <!-- <el-button type="success" round size="small">确认</el-button> -->
@@ -188,6 +187,9 @@
              <el-card class="box-card">
               <div slot="header" class="clearfix">
                 <span class="cardMoring">预约上午</span>
+                 <div class="check-all"  >
+                 <el-checkbox v-model="checked" @change="checkAll">全 选</el-checkbox>
+                  </div>
               </div>
               <!-- 上午时间选择卡片区域 -->
               <div class="switchs-left">
@@ -581,7 +583,7 @@ export default {
         name:'小明明',
         class:'初三（2）班',
         school:'实验中学',
-        orderNum:"15179175376fdf55",
+        orderNum:"2019101915179175376",
         time:"11:00-12:00"
       }],
       returnImg:[{
@@ -649,25 +651,15 @@ export default {
       },
         //时间选中状态的改变的规则
          changeRules(i,timegrop){
-              let storearr=[]
-          // timegrop.forEach(item=>storearr.push(item.type)
-          //  )
-          
+           let storearr=[]
            let choeseindex=  timegrop.findIndex((value, index, arr)=>{
              return value.type=='primary'
            }) 
-            // console.log(choeseindex);
-            
-          //  let unchoeseindex=  storearr.findIndex((value, index, arr)=>{
-          //    return value=="info"
-          //  })
             if(choeseindex==-1){
-              //  let choeseindex = i
               timegrop[i].type="info"
-            }else{  
-              
-          //  console.log("选中的第一个下标为----"+choeseindex,'第多次选中的下标为---'+i,'第一个没有选中的下标为---'+unchoeseindex,this.switchioes.length);
-           for(let k=0;k<timegrop.length;k++){
+            }else{              
+             //  console.log("选中的第一个下标为----"+choeseindex,'第多次选中的下标为---'+i,'第一个有选中的下标为---'+unchoeseindex,this.switchioes.length);
+             for(let k=0;k<timegrop.length;k++){
               if(k!=choeseindex){
                  timegrop[k].type="info"
               }
@@ -676,7 +668,11 @@ export default {
             timegrop[j].type="primary"
            }
             }
-              //总价的计算
+            this.calcPrice()
+         },
+         //时间选择确定后计算总价格
+         calcPrice(){
+                         //总价的计算
                   let priceArr=[]
                   let priceAll=0
                this.switchioes.forEach(item=> {
@@ -859,11 +855,31 @@ export default {
             console.log('你的名字是=>',value);
             
          },
+         //点击放大二维码
       showDrawer(){
         this.QRcode=! this.QRcode
         // console.log(1111111111111111);       
-      }
-
+      },
+        //点击更换验证码
+        changeCheckImg(){
+          console.log('==========');
+         let v= confirm('切换二维码')
+         console.log(v);
+         
+        },
+       //点击全选按钮
+        checkAll(){
+          if(this.checked){
+            this.switchioes.forEach(item=>{
+             item.type="primary"
+           })   
+          }else{
+             this.switchioes.forEach(item=>{
+             item.type="info"
+           })
+          }
+          this.calcPrice()
+        }
 
   },
   created(){
@@ -996,31 +1012,42 @@ export default {
 .queryByCondition .atips {
   line-height: 30px;
 }
-.orderPhone {
+.order-phone {
   padding-left: 20px;
 }
-.orderPhone .checkNumber {
+.order-phone .check-number {
   margin-top: 20px;
 }
-.orderPhone .checkNumber img {
+/* .order-phone .check-number .check-img-box{
+ display: inline-block;
+} */
+.order-phone .check-number img {
   margin-left: 10px;
   margin-bottom: 20px;
 }
-.orderPhone .agreeButton {
+.order-phone .agreeButton {
   margin-left: 20px;
   display: inline-block;
 }
-.orderPhone .ordersteps {
+.order-phone .ordersteps {
   margin-top: 20px;
 }
 /* 卡片区域 */
 .timeChoese {
   padding: 10px;
 }
+.timeChoese .clearfix{
+    position: relative;
+}
 .box-card .timeChoeseMoring {
   float: left;
   margin-left: 150px;
 }
+.timeChoese .check-all{
+ position: absolute;
+ right: 0;
+ top: 0;
+ }
 .switchs-left {
   width: 95%;
   float: left;
