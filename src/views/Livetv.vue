@@ -6,7 +6,7 @@
         <div class="grid-content bg-purple-dark">
           <!-- 面包屑 -->
           <!-- <span id="toreturn">◀返回</span> -->
-          <span>预约</span>
+          <span class="title">预约</span>
         </div>
       </el-col>
     </el-row>
@@ -985,9 +985,9 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 
 <style >
-  .title {
-    font-size: 15px;
-  }
+.title {
+  font-size: 15px;
+}
 .navbox {
   padding: 0 0 5px 5px;
 }
