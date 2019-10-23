@@ -9,9 +9,11 @@ import './assets/base.css'
 //注册中间件
 Vue.use(ElementUI);
  
-
+ //导入自定义路由模块
+import router from './router/router.js'
 Vue.config.productionTip = false
 
 new Vue({
   render: h => h(App),
+  router
 }).$mount('#app')

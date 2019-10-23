@@ -1,18 +1,11 @@
 <template>
-  <div>
-   
-    <Loginandapp/>
-  </div>
+  <router-view></router-view>
 </template>
 
 <script>
-import Loginandapp from './components/Livetv.vue'
 
 export default {
-  name: 'app',
-  components: {
-    Loginandapp
-  }
+
 }
 </script>
 
