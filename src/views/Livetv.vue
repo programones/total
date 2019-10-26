@@ -6,31 +6,19 @@
         <div class="grid-content bg-purple-dark">
           <!-- 面包屑 -->
           <!-- <span id="toreturn">◀返回</span> -->
-          <span class="title">预约</span>
+          <span class="title">素质教育直播付费预约</span>
         </div>
       </el-col>
     </el-row>
-
-    <!-- <el-Steps :active="active" finish-status="success">
-      <el-step title="步骤 1"></el-step>
-      <el-step title="步骤 2"></el-step>
-      <el-step title="步骤 3"></el-step>
-    </el-Steps>-->
-
-    <!-- <el-steps :space="200" :active="active" finish-status="success">
-  <el-step title="已完成"></el-step>
-  <el-step title="进行中"></el-step>
-  <el-step title="步骤 3"></el-step>
-    </el-steps>-->
     <div class="navbox">
       <el-tabs :tab-position="tabPosition" style="height:600px;" v-model="active1" >
         <el-tab-pane label="查询" name="1">
           <!-- 点击显示抽屉栏 -->
-          <div class="queryChoose">选择查询方式</div>
+          <div class="queryChoose">选择查询方式:</div>
           <div class="queryButton">
             <el-button type="success" @click="queryExaTable = true" size="small">精确查询</el-button>
             <el-button type="success" @click="querytable = true" size="small">选择查询</el-button>
-            <el-button type="danger" @click="toSearch" size="small">详细查询</el-button>
+            <!-- <el-button type="danger" @click="toSearch" size="small">详细查询</el-button> -->
           </div>
           <!-- 1.输入姓名查找 -->
           <el-drawer title="精确查询" :visible.sync="queryExaTable" direction="rtl" size="100%">
@@ -128,6 +116,7 @@
                   </el-select>
                 </div>
               </div>
+              <div class="close-btn"><el-button size="small" type="success" @click="PersonIfo">完成</el-button></div>
             </div>
           </el-drawer>
           <div class="nextStep">           
@@ -165,7 +154,7 @@
 
             <!-- 单选框 -->
 
-            <el-checkbox v-model="checked" @click.native="cliscksure">同意相关条款</el-checkbox>
+            <el-checkbox v-model="checkedAgreement" @click.native="cliscksure">同意相关条款</el-checkbox>
             <!-- 确认按钮 -->
 
             <div class="agreeButton">
@@ -180,7 +169,7 @@
         </el-tab-pane>
 
         <!-- 三、选择时间 -->
-        <el-tab-pane label="时间选择" name="3" lazy>
+        <el-tab-pane label="时间选择" name="3" lazy  :disabled="timechoice">
           <div class="timeChoese">
                <!-- 卡片区域 -->
               <!-- （1）上午卡片区域 -->
@@ -258,7 +247,7 @@
         </el-tab-pane>
 
         <!-- 五、预订单 -->
-        <el-tab-pane label="预订单" name="4" lazy>
+        <el-tab-pane label="预订单" name="4" lazy :disabled="yudingdan">
         <div class="beforehandOrder"> 
           预订单
           <div class="tableIfo">
@@ -312,7 +301,7 @@
         </div> 
         </el-tab-pane>
         <!-- 六、订单回执 -->
-        <el-tab-pane label="预约回执" name="5" lazy>          
+        <el-tab-pane label="预约回执" name="5" lazy :disabled="huizi">          
             <div class="orderSuccess">
                 <!-- <p class="orderTitle">预约回执</p> -->
               <el-collapse
@@ -388,12 +377,16 @@
         </el-tab-pane>
       </el-tabs>
       <!-- 弹出条框内容 -->
-      <el-dialog title="条款内容" :visible.sync="dialogVisible" width="95%">
-        <span>
+      <el-dialog title="条款内容" :visible.sync="dialogVisible" width="95%" fullscreen>
+        <!-- <span>
           正文与附件作为合同文本的整体结构内容时，它们共同表现出了以下三个特征：结构均衡、适从交易、贯通全文。
           结构均衡特征是指不论合同文本使用于何种交易，它的整体结构应是相互衔接，并且是相互补充的。相互衔接是指正文与附件之间存在的依据是有机相连，不是无故而生。其内容是互补性的，而不是重复的。通过互补对交易的权利与义务进行完善与明确。
           适从交易特征是指合同结构的简繁不是依形式而定，而是依交易实际特征而定的。换句话说，合同结构服从交易的需要。交易要求复杂时，合同结构就复杂；反之，则简单。 贯通全文特征是指合同正文与附件的文字用词要语意一致，绝无丝毫异议。同时描述的当事人权利与义务在正文与附件中具有严格的一致性。该特征决定了撰稿人或多个撰稿人的工作规范，尤其多个撰稿人存在时，对总审校人提出了明确的要求。该项特征提出的问题若不能保证，谈判就会失去目标或完成不了谈判任务。即便表面上完成了谈判，执行中也会重燃战火。
-        </span>
+        </span> -->
+       
+            <agrement @setAgreement=setAgreement></agrement>
+      
+       
         <span slot="footer" class="dialog-footer">
           <!-- <el-button @click="dialogVisible = false">取 消</el-button> -->
           <div>
@@ -421,15 +414,17 @@
 import { log } from 'util';
 import {http} from '../http/http.js'
 import {getsixstring} from '../api/randomstr'
+import agrement from '../components/agrement'
 export default {
   name: "appointment",
-  
+  components:{agrement},
   data() {
     return {
     
       
       // active: 0,
       active1: "1",
+      checkedAgreement:false,
       checked: false,
       value2: false,
       loading:false,
@@ -555,9 +550,7 @@ export default {
       querytable: false,
       accurateInputValue: "",
       activeNames:['1','2','3'],
-      QueryRuesult: [
-      
-      ],
+      QueryRuesult: [],
       choeseprovince: "",
       choesecities: "",
       choeseArea: "",
@@ -593,7 +586,9 @@ export default {
       }],
       orderTimeArr:[],
       QRcode:false,//二维码抽屉
-  
+      huizi:true,//回执处的禁止选择
+      yudingdan:false,//预订单禁止选择
+      timechoice:false,//时间选择禁止选择
     };
   },
 
@@ -633,14 +628,13 @@ export default {
        }
      },
     cliscksure() {
-      // console.log(111);
-
       this.dialogVisible = true;
-      this.buttonType = this.checked ? "" : "success";
+     
     },
     timechoese(value,i) {
       this.changrColor(value)
       this.changeRules(i,this.switchioes);
+      this.checkAllChoice(this.switchioes)            
     },
     timechoeseAfernoon(value,i){
       this.changrColor(value)
@@ -702,14 +696,23 @@ export default {
             this.totalprice=priceAll/100
             this.beforehandTable[0].price=this.totalprice
          },
+            //关联全选按钮  
+            checkAllChoice(timegrop){
+               
+               if(timegrop[0].type=="info" || timegrop[5].type=="info"){
+                 this.checked=false
+               }else{
+                 this.checked=true         
+               }
+                  
+            },
           //改变的选中颜色
          changrColor(value){
        if (value.type == "info") {
         value.type = "primary";
         } else {
         value.type = "info";
-       }
-        
+       }     
        },
 
     //人名选择查找
@@ -723,6 +726,7 @@ export default {
         });
       }else{
         this.loading=true;
+        this.QueryRuesult=[]
         let param = {
       ask:1,
       ask_word:"name",
@@ -847,7 +851,7 @@ export default {
         this.choeseName=""
           http.findPerson(classFind).then(res=>{
           this.names=res.data[0].infos  
-          console.log(this.names);
+          console.log(res);
                    
         })
         },
@@ -882,10 +886,25 @@ export default {
           this.calcPrice()
         },
         //编程式导航
-        toSearch(){
-          this.$router.push('/search')
-        },
-
+        // toSearch(){
+        //   this.$router.push('/search')
+        // },
+        //条件选择后点击完成 信息是否选择完整
+        PersonIfo(){
+          console.log('点击了完成按钮');
+        
+        } ,
+        setAgreement(eve){
+            // console.log(eve); 
+             this.dialogVisible = false;
+             if(eve){
+               this.checkedAgreement=true
+              this.buttonType= "success";
+             }else {
+               this.checkedAgreement=false;
+               this.buttonType= "";
+             }         
+        }//协议栏同意是否 
 
   },
   created(){
@@ -995,7 +1014,7 @@ export default {
   line-height: 50px;
 }
 .queryButton {
-  padding-left: 50px;
+  padding-left: 90px;
 }
 .nextStep {
   margin-left: 140px;
@@ -1013,6 +1032,9 @@ export default {
 .queryByCondition {
   padding-left: 20px;
   /* height: 600px; */
+}
+.queryByCondition .close-btn{
+  margin-top: 30px;
 }
 .queryByCondition .chioeseQuery {
   margin-top: 10px;
@@ -1160,4 +1182,5 @@ export default {
   padding: 10px 0;
   background-color: #f9fafc;
 }
+
 </style>

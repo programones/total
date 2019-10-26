@@ -84,7 +84,8 @@
                             <el-table-column type="expand">
                               <template slot-scope="">
                                 <el-form label-position="left" inline class="demo-table-expand">
-                                <p>相关详细信息</p>
+                              <div class="detil-title"><span>具体时间：</span></div>
+                              <div class="detil-title"><span>地市：</span></div>
                                 </el-form>
                               </template>
                             </el-table-column>
@@ -111,6 +112,24 @@
                       </el-table>
                    </div>
            </el-tab-pane>
+             <el-tab-pane name="third" label="文件上传">
+              <div class="uopdata">
+                 <el-upload
+                     class="upload-demo"
+                     ref="upload"
+                     :action="updataUrl"
+                     :on-preview="handlePreview"
+                     :on-remove="handleRemove"
+                     :file-list="fileList"
+                     :on-success="fileSuccess"
+                     :auto-upload="false">
+                     <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
+                     <el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload">上传到服务器</el-button>
+                     <div slot="tip" class="el-upload__tip">请选择上传文件</div>
+                    </el-upload>
+                </div>  
+
+             </el-tab-pane>
          </el-tabs>
       </div>
  
@@ -167,6 +186,8 @@ export default {
             class:'初三（1）班',
             price: 0.15
           }],
+           fileList:[],//上传文件列表
+           updataUrl:'https://jsonplaceholder.typicode.com/posts/',//文件上传的地址
       }
    },
    methods:{
@@ -180,7 +201,7 @@ export default {
       //选择天数后确定的时间
        choiceaDay(){
           console.log(this.choiceDay.replace(/-/g,''));
-          
+         
        }, 
        //选择周后确定的返回周数数据
        choiceaWeek(){
@@ -193,7 +214,24 @@ export default {
     const newDate = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate()  
                    
     return newDate;
-}
+      },
+              //文件按上传部分的相关事件
+        //  
+        submitUpload() {
+        this.$refs.upload.submit();
+      },
+       //文件列表移除文件时的钩子
+      handleRemove(file, fileList) {
+        console.log(file, fileList,2);
+      },
+      //点击文件列表中已上传的文件时的钩子
+      handlePreview(file) {
+        console.log(file,3);
+      },
+       fileSuccess(eve){
+         console.log(eve);
+         
+       }
 
 
    }
@@ -220,5 +258,8 @@ export default {
     .container .tab-nav .block{
        margin-top: 10px;
     }
-
+    .container .tab-table .detil-title{
+      line-height: 30px;
+    }
 </style>
+
