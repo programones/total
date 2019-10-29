@@ -17,6 +17,7 @@ const routes= [
     //     name:"search",
     //     component:search
     //  }
+   
 ]
 // 实例化路由
 const router = new VueRouter({

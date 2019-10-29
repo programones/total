@@ -11,7 +11,7 @@
       </el-col>
     </el-row>
     <div class="navbox">
-      <el-tabs :tab-position="tabPosition" style="height:600px;" v-model="active1" >
+      <el-tabs :tab-position="tabPosition" style="height:600px;" v-model="active1">
         <el-tab-pane label="查询" name="1">
           <!-- 点击显示抽屉栏 -->
           <div class="queryChoose">选择查询方式:</div>
@@ -31,12 +31,11 @@
                   style="width:60%"
                   @clear="resetinput"
                 ></el-input>
-                <el-button icon="el-icon-search" @click="findByNanme" >查找</el-button>
-                
+                <el-button icon="el-icon-search" @click="findByNanme">查找</el-button>
               </div>
               <div class="tableContent">
                 <!-- 表格显示 -->
-                <el-table :data="QueryRuesult" border style="width: 100%"  v-loading="loading">
+                <el-table :data="QueryRuesult" border style="width: 100%" v-loading="loading">
                   <el-table-column prop="name" label="姓名"></el-table-column>
 
                   <el-table-column prop="school" label="学校"></el-table-column>
@@ -51,19 +50,28 @@
             <div class="queryByCondition">
               <p class="atips">请从上而下选择查询：</p>
               <div class="chioeseQuery">
-                <el-select v-model="choeseprovince" placeholder="请选择省份"  @change="gethttpProvince(choeseprovince)" size="small">
+                <el-select
+                  v-model="choeseprovince"
+                  placeholder="请选择省份"
+                  @change="gethttpProvince(choeseprovince)"
+                  size="small"
+                >
                   <el-option
                     v-for="item in provinces"
                     :key="item.ask_data"
                     :label="item.ask_data"
                     :value="item.ask_data"
-                   
                   ></el-option>
                 </el-select>
               </div>
               <!-- <p class="atips">2.选择市</p> -->
               <div class="chioeseQuery">
-                <el-select v-model="choesecities" placeholder="请选择市"  @change="gethttpCities(choesecities)" size="small">
+                <el-select
+                  v-model="choesecities"
+                  placeholder="请选择市"
+                  @change="gethttpCities(choesecities)"
+                  size="small"
+                >
                   <el-option
                     v-for="item in cities"
                     :key="item.ask_data"
@@ -74,53 +82,75 @@
               </div>
               <!-- <p class="atips">3.选择区</p> -->
               <div class="chioeseQuery">
-                <el-select v-model="choeseArea" placeholder="请选择市区" @change="gethttpAreas(choeseArea)" size="small">
+                <el-select
+                  v-model="choeseArea"
+                  placeholder="请选择市区"
+                  @change="gethttpAreas(choeseArea)"
+                  size="small"
+                >
                   <el-option
                     v-for="item in areas"
-                     :key="item.ask_data"
-                     :label="item.ask_data"
-                     :value="item.ask_data"
+                    :key="item.ask_data"
+                    :label="item.ask_data"
+                    :value="item.ask_data"
                   ></el-option>
                 </el-select>
               </div>
               <!-- <p class="atips">4.选择学校</p> -->
               <div class="chioeseQuery">
-                <el-select v-model="choeseSchool" placeholder="请选择学校" @change="gethttpSchool(choeseSchool)" size="small">
+                <el-select
+                  v-model="choeseSchool"
+                  placeholder="请选择学校"
+                  @change="gethttpSchool(choeseSchool)"
+                  size="small"
+                >
                   <el-option
                     v-for="item in schools"
-                     :key="item.ask_data"
-                     :label="item.ask_data"
-                     :value="item.ask_data"
+                    :key="item.ask_data"
+                    :label="item.ask_data"
+                    :value="item.ask_data"
                   ></el-option>
                 </el-select>
               </div>
               <!-- <p class="atips">5.选择班级</p> -->
               <div class="chioeseQuery">
-                <el-select v-model="choeseClass" placeholder="请选择班级" size="small"  @change="gethttpClass(choeseClass)">
+                <el-select
+                  v-model="choeseClass"
+                  placeholder="请选择班级"
+                  size="small"
+                  @change="gethttpClass(choeseClass)"
+                >
                   <el-option
                     v-for="item in classes"
-                     :key="item.ask_data"
-                     :label="item.ask_data"
-                     :value="item.ask_data"
+                    :key="item.ask_data"
+                    :label="item.ask_data"
+                    :value="item.ask_data"
                   ></el-option>
                 </el-select>
                 <!-- <p class="atips">6.选择姓名</p> -->
                 <div class="chioeseQuery">
-                  <el-select v-model="choeseName" placeholder="请选择姓名" size="small" @change="lastchangeName(choeseName)">
+                  <el-select
+                    v-model="choeseName"
+                    placeholder="请选择姓名"
+                    size="small"
+                    @change="lastchangeName(choeseName)"
+                  >
                     <el-option
                       v-for="item in names"
-                     :key="item.ask_data"
-                     :label="item.ask_data"
-                     :value="item.ask_data"
+                      :key="item.ask_data"
+                      :label="item.ask_data"
+                      :value="item.ask_data"
                     ></el-option>
                   </el-select>
                 </div>
               </div>
-              <div class="close-btn"><el-button size="small" type="success" @click="PersonIfo">完成</el-button></div>
+              <div class="close-btn">
+                <el-button size="small" type="success" @click="PersonIfo">完成</el-button>
+              </div>
             </div>
           </el-drawer>
-          <div class="nextStep">           
-            <el-button size="small" @click="next">下一步</el-button>
+          <div class="nextStep">
+            <el-button size="small" @click="next" :disabled="btndisabled_one">下一步</el-button>
           </div>
         </el-tab-pane>
 
@@ -128,63 +158,62 @@
         <el-tab-pane label="预约" name="2" :disabled="value2" lazy>
           <div class="order-phone">
             <div class="phoneNumber">
-              <!-- input手机号码输入框 -->           
+              <!-- input手机号码输入框 -->
               <el-input
                 v-model.trim="inputphoneNumber"
                 maxlength="11"
                 placeholder="请输入手机号"
                 style="width:60%"
-                  suffix-icon="el-icon-phone"
-              ></el-input>              
+                suffix-icon="el-icon-phone"
+              ></el-input>
             </div>
-            <div class="check-number">             
+            <div class="check-number">
               <el-input
                 v-model="inputcheckNumber"
                 maxlength="4"
                 placeholder="请输入验证码"
                 style="width:50%"
-              ></el-input>              
-                 <img src="../assets/yzm.jpg" alt width="82px" height="32px" @click="changeCheckImg"/>                                                
+              ></el-input>
+              <el-button type="text" @click="changeCheckCode">{{statusCode?('重新获取('+residueTime+'s)'):'点击获取验证码'}}</el-button>
+              <!-- <img src="../assets/yzm.jpg" alt width="82px" height="32px" @click="changeCheckImg"/>                                                 -->
             </div>
-            
+
             <!-- <el-button type="success" round size="small">确认</el-button> -->
 
             <!-- 点击弹出框 -->
             <!-- <el-button type="text" @click="dialogVisible = true" id="caluse">相关条款</el-button> -->
-
-            <!-- 单选框 -->
-
-            <el-checkbox v-model="checkedAgreement" @click.native="cliscksure">同意相关条款</el-checkbox>
-            <!-- 确认按钮 -->
-
-            <div class="agreeButton">
-              <el-button :type="buttonType" size="small" @click="checkPhone">确认</el-button>
+            <div class="provision">
+              <!-- 单选框 -->
+              <el-checkbox v-model="checkedAgreement" @click.native="cliscksure">同意相关 条款</el-checkbox>
+              <!-- 确认按钮 -->
+              <div class="agreeButton">
+                <el-button :type="buttonType" size="small" @click="checkPhone">确认</el-button>
+              </div>
             </div>
             <div class="ordersteps">
               <el-divider></el-divider>
               <el-button size="small" @click="top">上一步</el-button>
-              <el-button size="small" @click="next">下一步</el-button>
+              <el-button size="small" @click="next" :disabled="btndisabled_two">下一步</el-button>
             </div>
           </div>
         </el-tab-pane>
 
         <!-- 三、选择时间 -->
-        <el-tab-pane label="时间选择" name="3" lazy  :disabled="timechoice">
+        <el-tab-pane label="时间选择" name="3" lazy :disabled="timechoice">
           <div class="timeChoese">
-               <!-- 卡片区域 -->
-              <!-- （1）上午卡片区域 -->
+            <!-- 卡片区域 -->
+            <!-- （1）上午卡片区域 -->
 
-             <el-card class="box-card">
+            <el-card class="box-card">
               <div slot="header" class="clearfix">
                 <span class="cardMoring">预约上午</span>
-                 <div class="check-all"  >
-                 <el-checkbox v-model="checked" @change="checkAll">全 选</el-checkbox>
-                  </div>
+                <div class="check-all">
+                  <el-checkbox v-model="checked" @change="checkAll">全 选</el-checkbox>
+                </div>
               </div>
               <!-- 上午时间选择卡片区域 -->
               <div class="switchs-left">
                 <div v-for="(item,i) in switchioes" :key="item.value" class="text item">
-                
                   <el-button
                     :type="item.type"
                     round
@@ -194,7 +223,7 @@
                   >{{item.value}}</el-button>
                 </div>
               </div>
-             </el-card>
+            </el-card>
 
             <!-- （2）下午卡片区域 -->
             <div class="timeChoeseAfernoon">
@@ -202,177 +231,129 @@
                 <div slot="header" class="clearfix">
                   <span class="cardafternoom">预约下午</span>
                 </div>
-                  <!-- 下午时间选择区域 -->
-                  <div class="card-afternoon">
-                <div v-for="(item,j) in switchioesTwo" :key="item.value" class="text item">
-                  <!-- {{item.value}} -->
-                  <el-button
-                    :type="item.type"
-                    round
-                    size="mini"
-                    @click="timechoeseAfernoon(item,j)"
-                     icon="el-icon-time"
-                  >{{item.value}}</el-button>
-                </div>
+                <!-- 下午时间选择区域 -->
+                <div class="card-afternoon">
+                  <div v-for="(item,j) in switchioesTwo" :key="item.value" class="text item">
+                    <!-- {{item.value}} -->
+                    <el-button
+                      :type="item.type"
+                      round
+                      size="mini"
+                      @click="timechoeseAfernoon(item,j)"
+                      icon="el-icon-time"
+                    >{{item.value}}</el-button>
+                  </div>
                 </div>
               </el-card>
             </div>
             <!-- （3）晚上卡片区域 -->
-               <div class="timeChoeseAfernoon">
+            <div class="timeChoeseAfernoon">
               <el-card class="box-card">
                 <div slot="header" class="clearfix">
                   <span class="cardafternoom">预约晚上</span>
                 </div>
-                  <!-- 下午时间选择区域 -->
-                  <div class="card-afternoon">
-                <div v-for="(item,f) in switchioesThree" :key="item.value" class="text item">
-                  <!-- {{item.value}} -->
-                  <el-button
-                    :type="item.type"
-                    round
-                    size="mini"
-                    @click="timechoeseNeight(item,f)"
-                     icon="el-icon-time"
-                  >{{item.value}}</el-button>
-                </div>
+                <!-- 下午时间选择区域 -->
+                <div class="card-afternoon">
+                  <div v-for="(item,f) in switchioesThree" :key="item.value" class="text item">
+                    <!-- {{item.value}} -->
+                    <el-button
+                      :type="item.type"
+                      round
+                      size="mini"
+                      @click="timechoeseNeight(item,f)"
+                      icon="el-icon-time"
+                    >{{item.value}}</el-button>
+                  </div>
                 </div>
               </el-card>
             </div>
-             <div class="totalprice">
-               <el-divider content-position="center">价格：<span class="price">{{totalprice}}</span> 元</el-divider>
-               </div> 
+            <div class="totalprice">
+              <el-divider content-position="center">
+                价格：
+                <span class="price">{{totalprice}}</span> 元
+              </el-divider>
+            </div>
             <el-button size="small" @click="top">上一步</el-button>
-            <el-button size="small" @click="next">下一步</el-button>
+            <el-button size="small" @click="next" :disabled="btndisabled_three">下一步</el-button>
           </div>
         </el-tab-pane>
 
         <!-- 五、预订单 -->
         <el-tab-pane label="预订单" name="4" lazy :disabled="yudingdan">
-        <div class="beforehandOrder"> 
-          预订单
-          <div class="tableIfo">
-             
-            <!-- 预订单处表格 -->
-                <el-table
-                 :data="beforehandTable"
-                 border
-                 size="mini"
-                 >
-                 <el-table-column
-                   prop="name"
-                   label="姓名"
-                     width="60px"
-                      fixed
-                    >
-                 </el-table-column>
-                 <el-table-column
-                   prop="class"
-                   label="班级"
-                   >
-                 </el-table-column>
-                 <el-table-column
-                   prop="school"
-                   label="学校">
-                 </el-table-column>
-                 <el-table-column
-                   prop="time"
-                   label="预约时段"
-                   width="120px">
-                   <!-- <p v-if="totalprice==0">未选择时段</p> -->
-                   <el-tag type="warning" size="mini" v-for="item in orderTimeArr" :key="item.value">{{item.value}}</el-tag>
-                   
-                 </el-table-column>
-                 <el-table-column
-                   prop="price"
-                   label="总费用(单位/元)">
-                 </el-table-column>
-               </el-table>
-              </div>
-              <div class="payWays">
-                请选择支付方式：
-                  
-                 <el-button type="success" plain size="mini"><i class="iconfont icon-weixin"></i> 微 信</el-button>
-                 <el-button type="primary" plain size="mini"><i class="iconfont icon-zhifubao"></i>支付宝</el-button>
-                  <el-button plain size="small" icon="el-icon-more">其他</el-button>
-              </div>
-              <el-divider></el-divider>
-          <el-button size="small" @click="top">上一步</el-button>
-          <el-button size="small" @click="next">下一步</el-button>
-        </div> 
+          <div class="beforehandOrder">
+            预订单
+            <div class="tableIfo">
+              <!-- 预订单处表格 -->
+              <el-table :data="beforehandTable" border size="mini">
+                <el-table-column prop="name" label="姓名" width="60px" fixed></el-table-column>
+                <el-table-column prop="class" label="班级"></el-table-column>
+                <el-table-column prop="school" label="学校"></el-table-column>
+                <el-table-column prop="time" label="预约时段" width="120px">
+                  <!-- <p v-if="totalprice==0">未选择时段</p> -->
+                  <el-tag
+                    type="warning"
+                    size="mini"
+                    v-for="item in orderTimeArr"
+                    :key="item.value"
+                  >{{item.value}}</el-tag>
+                </el-table-column>
+                <el-table-column prop="price" label="总费用(单位/元)"></el-table-column>
+              </el-table>
+            </div>
+            <div class="payWays">
+              请选择支付方式：
+              <el-button type="success" plain size="mini">
+                <i class="iconfont icon-weixin"></i> 微 信
+              </el-button>
+              <el-button type="primary" plain size="mini">
+                <i class="iconfont icon-zhifubao"></i>支付宝
+              </el-button>
+              <el-button plain size="small" icon="el-icon-more">其他</el-button>
+            </div>
+            <el-divider></el-divider>
+            <el-button size="small" @click="top">上一步</el-button>
+            <el-button size="small" @click="next" :disabled="btndisabled_four">下一步</el-button>
+          </div>
         </el-tab-pane>
         <!-- 六、订单回执 -->
-        <el-tab-pane label="预约回执" name="5" lazy :disabled="huizi">          
-            <div class="orderSuccess">
-                <!-- <p class="orderTitle">预约回执</p> -->
-              <el-collapse
-                 v-model="activeNames"
-                  >
-                 <el-collapse-item title="个人信息" name="1">
-                 <el-table
-                    :data="orderPersoalIfo"
-                    border
+        <el-tab-pane label="预约回执" name="5" lazy :disabled="huizi">
+          <div class="orderSuccess">
+            <!-- <p class="orderTitle">预约回执</p> -->
+            <el-collapse v-model="activeNames">
+              <el-collapse-item title="个人信息" name="1">
+                <el-table :data="orderPersoalIfo" border size="mini">
+                  <el-table-column prop="name" label="姓名" width="60px" fixed></el-table-column>
+                  <el-table-column prop="class" label="班级"></el-table-column>
+                  <el-table-column prop="school" label="学校"></el-table-column>
+                  <el-table-column prop="time" label="预约手机" width="120px">
+                    <el-tag type="success" size="mini">15179175376</el-tag>
+                  </el-table-column>
+                  <el-table-column prop="orderNum" label="订单号"></el-table-column>
+                </el-table>
+              </el-collapse-item>
+              <el-collapse-item title="时段信息" name="2">
+                <div class="orderTag">
+                  <el-tag
+                    type="warning"
                     size="mini"
-                    >
-                  <el-table-column
-                   prop="name"
-                   label="姓名"
-                     width="60px"
-                      fixed
-                    >
-                 </el-table-column>
-                 <el-table-column
-                   prop="class"
-                   label="班级"
-                   >
-                 </el-table-column>
-                 <el-table-column
-                   prop="school"
-                   label="学校">
-                 </el-table-column>
-                 <el-table-column
-                   prop="time"
-                   label="预约手机"
-                   width="120px">
-                   <el-tag type="success" size="mini">15179175376</el-tag>
-                  
-                 </el-table-column>
-                 <el-table-column
-                   prop="orderNum"
-                   label="订单号">
-                 </el-table-column>
-               </el-table> 
-                    </el-collapse-item>
-                <el-collapse-item title="时段信息" name="2">
-                     <div class="orderTag">
-                    <el-tag type="warning" size="mini"  v-for="item in orderTimeArr" :key="item.value">{{item.value}}</el-tag>
-                   </div>
-                  </el-collapse-item>   
-                <el-collapse-item title="二维码及观看密码" name="3">
-                      <el-table
-                    :data="returnImg"
-                    border
-                    size="mini"
-                    >
-                  <el-table-column
-                   
-                   label="二维码"
-                    prop="url"     
-                    >
-                     <div class="thatcode" @click="showDrawer">
-                       <img :src=returnImg[0].url alt="" width="130" height="130">  
-                       <p>点击放大</p>
-                     </div>
-                   
-                 </el-table-column>
-                 <el-table-column
-                   prop="passworld"
-                   label="密码"
-                   >
-                 </el-table-column>                                          
-               </el-table> 
-                  </el-collapse-item>  
-              </el-collapse>               
-             </div>     
+                    v-for="item in orderTimeArr"
+                    :key="item.value"
+                  >{{item.value}}</el-tag>
+                </div>
+              </el-collapse-item>
+              <el-collapse-item title="二维码及观看密码" name="3">
+                <el-table :data="returnImg" border size="mini">
+                  <el-table-column label="二维码" prop="url">
+                    <div class="thatcode" @click="showDrawer">
+                      <img :src="returnImg[0].url" alt width="130" height="130" />
+                      <p>点击放大</p>
+                    </div>
+                  </el-table-column>
+                  <el-table-column prop="passworld" label="密码"></el-table-column>
+                </el-table>
+              </el-collapse-item>
+            </el-collapse>
+          </div>
           <el-button size="small" @click="top">上一步</el-button>
         </el-tab-pane>
       </el-tabs>
@@ -382,11 +363,10 @@
           正文与附件作为合同文本的整体结构内容时，它们共同表现出了以下三个特征：结构均衡、适从交易、贯通全文。
           结构均衡特征是指不论合同文本使用于何种交易，它的整体结构应是相互衔接，并且是相互补充的。相互衔接是指正文与附件之间存在的依据是有机相连，不是无故而生。其内容是互补性的，而不是重复的。通过互补对交易的权利与义务进行完善与明确。
           适从交易特征是指合同结构的简繁不是依形式而定，而是依交易实际特征而定的。换句话说，合同结构服从交易的需要。交易要求复杂时，合同结构就复杂；反之，则简单。 贯通全文特征是指合同正文与附件的文字用词要语意一致，绝无丝毫异议。同时描述的当事人权利与义务在正文与附件中具有严格的一致性。该特征决定了撰稿人或多个撰稿人的工作规范，尤其多个撰稿人存在时，对总审校人提出了明确的要求。该项特征提出的问题若不能保证，谈判就会失去目标或完成不了谈判任务。即便表面上完成了谈判，执行中也会重燃战火。
-        </span> -->
-       
-            <agrement @setAgreement=setAgreement></agrement>
-      
-       
+        </span>-->
+
+        <agrement @setAgreement="setAgreement"></agrement>
+
         <span slot="footer" class="dialog-footer">
           <!-- <el-button @click="dialogVisible = false">取 消</el-button> -->
           <div>
@@ -395,152 +375,147 @@
         </span>
       </el-dialog>
     </div>
-     <!-- 二维码抽屉 -->
-      <el-drawer
-         title="二维码"
-         :visible.sync="QRcode"
-         direction="rtl"
-         size="100%"
-       >
-        <div class="drawerImg">
-         <img :src=returnImg[0].url alt="" width="250" height="250">
-         <div class="btnClose"><el-button @click="showDrawer">关 闭</el-button> </div>
+    <!-- 二维码抽屉 -->
+    <el-drawer title="二维码" :visible.sync="QRcode" direction="rtl" size="100%">
+      <div class="drawerImg">
+        <img :src="returnImg[0].url" alt width="250" height="250" />
+        <div class="btnClose">
+          <el-button @click="showDrawer">关 闭</el-button>
         </div>
-      </el-drawer>
+      </div>
+    </el-drawer>
   </div>
 </template>
 
 <script>
-import { log } from 'util';
-import {http} from '../http/http.js'
-import {getsixstring} from '../api/randomstr'
-import agrement from '../components/agrement'
+import { log } from "util";
+import { http } from "../http/http.js";
+import { getsixstring } from "../api/randomstr";
+import agrement from "../components/agrement";
 export default {
   name: "appointment",
-  components:{agrement},
+  components: { agrement },
   data() {
     return {
-    
-      
       // active: 0,
       active1: "1",
-      checkedAgreement:false,
+      checkedAgreement: false,
       checked: false,
       value2: false,
-      loading:false,
+      loading: false,
       switchioes: [
-         {
+        {
           checked: false,
           value: "09:00-09:30",
           type: "info",
-          price:0.01
+          price: 0.01
         },
-         {
+        {
           checked: false,
           value: "09:30-10:00",
           type: "info",
-          price:0.01
+          price: 0.01
         },
         {
           checked: false,
           value: "10:00-10:30",
           type: "info",
-          price:0.01
+          price: 0.01
         },
-         {
+        {
           checked: false,
           value: "10:30-11:00",
           type: "info",
-          price:0.01
+          price: 0.01
         },
-         {
+        {
           checked: false,
           value: "11:00-11:30",
           type: "info",
-          price:0.01
+          price: 0.01
         },
-       {
+        {
           checked: false,
           value: "11:30-12:00",
           type: "info",
-          price:0.01
-        },
+          price: 0.01
+        }
       ],
-      switchioesTwo:[
-           {
+      switchioesTwo: [
+        {
           checked: false,
           value: "14:00-14:30",
           type: "info",
-          price:0.01
+          price: 0.01
         },
-         {
+        {
           checked: false,
           value: "14:30-15:00",
           type: "info",
-          price:0.01
+          price: 0.01
         },
         {
           checked: false,
           value: "15:00-15:30",
           type: "info",
-          price:0.01
+          price: 0.01
         },
-         {
+        {
           checked: false,
           value: "15:30-16:00",
           type: "info",
-          price:0.01
+          price: 0.01
         },
-         {
+        {
           checked: false,
           value: "16:00-16:30",
           type: "info",
-          price:0.01
+          price: 0.01
         },
-       {
+        {
           checked: false,
           value: "16:30-14:00",
           type: "info",
-          price:0.01
-        },
+          price: 0.01
+        }
       ],
-      switchioesThree:[
-           {
+      switchioesThree: [
+        {
           checked: false,
           value: "18:00-18:30",
           type: "info",
-          price:0.01
+          price: 0.01
         },
-         {
+        {
           checked: false,
           value: "18:30-19:00",
           type: "info",
-          price:0.01
+          price: 0.01
         },
         {
           checked: false,
           value: "19:00-19:30",
           type: "info",
-          price:0.01
+          price: 0.01
         },
-         {
+        {
           checked: false,
           value: "19:30-20:00",
           type: "info",
-          price:0.01
+          price: 0.01
         },
-         {
+        {
           checked: false,
           value: "21:00-21:30",
           type: "info",
-          price:0.01
+          price: 0.01
         },
-       {
+        {
           checked: false,
           value: "21:30-22:00",
           type: "info",
-          price:0.01
-        },
+          price: 0.01
+        }
       ],
       tabPosition: "top",
       dialogVisible: false,
@@ -549,7 +524,7 @@ export default {
       queryExaTable: false,
       querytable: false,
       accurateInputValue: "",
-      activeNames:['1','2','3'],
+      activeNames: ["1", "2", "3"],
       QueryRuesult: [],
       choeseprovince: "",
       choesecities: "",
@@ -560,35 +535,47 @@ export default {
       buttonType: "",
       provinces: [],
       cities: [],
-      areas:[],
-      schools:[],
-      classes:[],
-      names:[],
-      totalprice:0.00,
-      beforehandTable:[{
-        name:'小明明',
-        class:'初三（2）班',
-        school:'实验中学',
-        price:0.01,
-        time:""
-
-      }],
-      orderPersoalIfo:[{
-        name:'小明明',
-        class:'初三（2）班',
-        school:'实验中学',
-        orderNum:"2019101915179175376",
-        time:"11:00-12:00"
-      }],
-      returnImg:[{
-        url:'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1571219823125&di=c59af7041a911b6bdb8b26dd892c41be&imgtype=0&src=http%3A%2F%2Fimg3.cache.netease.com%2Fgame%2F2013%2F11%2F26%2F20131126143638f53f4.png',
-        passworld:'15fsf5163515ad'
-      }],
-      orderTimeArr:[],
-      QRcode:false,//二维码抽屉
-      huizi:true,//回执处的禁止选择
-      yudingdan:false,//预订单禁止选择
-      timechoice:false,//时间选择禁止选择
+      areas: [],
+      schools: [],
+      classes: [],
+      names: [],
+      totalprice: 0.0,
+      beforehandTable: [
+        {
+          name: "小明明",
+          class: "初三（2）班",
+          school: "实验中学",
+          price: 0.01,
+          time: ""
+        }
+      ],
+      orderPersoalIfo: [
+        {
+          name: "小明明",
+          class: "初三（2）班",
+          school: "实验中学",
+          orderNum: "2019101915179175376",
+          time: "11:00-12:00"
+        }
+      ],
+      returnImg: [
+        {
+          url:
+            "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1571219823125&di=c59af7041a911b6bdb8b26dd892c41be&imgtype=0&src=http%3A%2F%2Fimg3.cache.netease.com%2Fgame%2F2013%2F11%2F26%2F20131126143638f53f4.png",
+          passworld: "15fsf5163515ad"
+        }
+      ],
+      orderTimeArr: [],
+      QRcode: false, //二维码抽屉
+      huizi: true, //回执处的禁止选择
+      yudingdan: false, //预订单禁止选择
+      timechoice: false, //时间选择禁止选择
+      btndisabled_one: true, //下一步按钮禁用状态
+      btndisabled_two: true, //下一步按钮禁用状态
+      btndisabled_three: true, //下一步按钮禁用状态
+      btndisabled_four: true, //下一步按钮禁用状态
+      statusCode: false,//控制验证码是否显示
+      residueTime:30,//多少秒后重新获取
     };
   },
 
@@ -599,405 +586,412 @@ export default {
       //先转为数字类型然后再转为字符串类型赋值
       let nextNumber = +this.active1;
       this.active1 = nextNumber + 1 + "";
-      document.documentElement.scrollTop=0;
+      document.documentElement.scrollTop = 0;
     },
     top() {
       let topNumber = +this.active1;
       this.active1 = topNumber - 1 + "";
-      document.documentElement.scrollTop=0;
+      document.documentElement.scrollTop = 0;
     },
-     //输入电话号码的核实
-     checkPhone(){
-        if(this.inputphoneNumber==""){
-           this.$message({
+    //输入电话号码的核实
+    checkPhone() {
+      if (this.inputphoneNumber == "") {
+        this.$message({
           showClose: true,
-          message: '手机号码不能为空!',
-          duration:1000
+          message: "手机号码不能为空!",
+          duration: 1000
         });
-        }else{
-        let regExp =/^(\+?0?86\-?)?1[345789]\d{9}$/
+      } else {
+        let regExp = /^(\+?0?86\-?)?1[345789]\d{9}$/;
         // console.log(regExp.test(this.inputphoneNumber));
-        if(!regExp.test(this.inputphoneNumber)){
-             this.$message({
-          showClose: true,
-          message: '请输入正确的手机号码！',
-          type: 'error',
-          duration:1000
-        });
+        if (!regExp.test(this.inputphoneNumber)) {
+          this.$message({
+            showClose: true,
+            message: "请输入正确的手机号码！",
+            type: "error",
+            duration: 1000
+          });
         }
-       }
-     },
+      }
+    },
     cliscksure() {
       this.dialogVisible = true;
-     
     },
-    timechoese(value,i) {
-      this.changrColor(value)
-      this.changeRules(i,this.switchioes);
-      this.checkAllChoice(this.switchioes)            
+    timechoese(value, i) {
+      this.changrColor(value);
+      this.changeRules(i, this.switchioes);
+      this.checkAllChoice(this.switchioes);
     },
-    timechoeseAfernoon(value,i){
-      this.changrColor(value)
-      this.changeRules(i,this.switchioesTwo);
+    timechoeseAfernoon(value, i) {
+      this.changrColor(value);
+      this.changeRules(i, this.switchioesTwo);
     },
-      timechoeseNeight(value,i){    
-      this.changrColor(value)
-      this.changeRules(i,this.switchioesThree);
-      },
-        //时间选中状态的改变的规则
-         changeRules(i,timegrop){
-           let storearr=[]
-           let choeseindex=  timegrop.findIndex((value, index, arr)=>{
-             return value.type=='primary'
-           }) 
-            if(choeseindex==-1){
-              timegrop[i].type="info"
-            }else{              
-             //  console.log("选中的第一个下标为----"+choeseindex,'第多次选中的下标为---'+i,'第一个有选中的下标为---'+unchoeseindex,this.switchioes.length);
-             for(let k=0;k<timegrop.length;k++){
-              if(k!=choeseindex){
-                 timegrop[k].type="info"
-              }
-           }
-           for(let j=choeseindex;j<=i;j++){
-            timegrop[j].type="primary"
-           }
-            }
-            this.calcPrice()
-         },
-         //时间选择确定后计算总价格
-         calcPrice(){
-                         //总价的计算
-                  let priceArr=[]
-                  let priceAll=0
-               this.switchioes.forEach(item=> {
-               if(item.type=="primary"){
-                 priceArr.push(item)
-               }
-               })
-               this.switchioesTwo.forEach(item=> {
-               if(item.type=="primary"){
-                 priceArr.push(item)
-               }
-               }) 
-                 this.switchioesThree.forEach(item=> {
-               if(item.type=="primary"){
-                 priceArr.push(item)
-               }
-               })  
-            priceArr.forEach(item=>{
-              priceAll+=(item.price*100)
-              
-            })
-            //将选中的信息赋值给data中的数组       
-            this.orderTimeArr=priceArr 
-            this.beforehandTable[0].time="未选中"
-             //选中时间后的价格的计算   
-            this.totalprice=priceAll/100
-            this.beforehandTable[0].price=this.totalprice
-         },
-            //关联全选按钮  
-            checkAllChoice(timegrop){
-               
-               if(timegrop[0].type=="info" || timegrop[5].type=="info"){
-                 this.checked=false
-               }else{
-                 this.checked=true         
-               }
-                  
-            },
-          //改变的选中颜色
-         changrColor(value){
-       if (value.type == "info") {
+    timechoeseNeight(value, i) {
+      this.changrColor(value);
+      this.changeRules(i, this.switchioesThree);
+    },
+    //时间选中状态的改变的规则
+    changeRules(i, timegrop) {
+      let storearr = [];
+      let choeseindex = timegrop.findIndex((value, index, arr) => {
+        return value.type == "primary";
+      });
+      if (choeseindex == -1) {
+        timegrop[i].type = "info";
+      } else {
+        //  console.log("选中的第一个下标为----"+choeseindex,'第多次选中的下标为---'+i,'第一个有选中的下标为---'+unchoeseindex,this.switchioes.length);
+        for (let k = 0; k < timegrop.length; k++) {
+          if (k != choeseindex) {
+            timegrop[k].type = "info";
+          }
+        }
+        for (let j = choeseindex; j <= i; j++) {
+          timegrop[j].type = "primary";
+        }
+      }
+      this.calcPrice();
+    },
+    //时间选择确定后计算总价格
+    calcPrice() {
+      //总价的计算
+      let priceArr = [];
+      let priceAll = 0;
+      this.switchioes.forEach(item => {
+        if (item.type == "primary") {
+          priceArr.push(item);
+        }
+      });
+      this.switchioesTwo.forEach(item => {
+        if (item.type == "primary") {
+          priceArr.push(item);
+        }
+      });
+      this.switchioesThree.forEach(item => {
+        if (item.type == "primary") {
+          priceArr.push(item);
+        }
+      });
+      priceArr.forEach(item => {
+        priceAll += item.price * 100;
+      });
+      //将选中的信息赋值给data中的数组
+      this.orderTimeArr = priceArr;
+      this.beforehandTable[0].time = "未选中";
+      //选中时间后的价格的计算
+      this.totalprice = priceAll / 100;
+      this.beforehandTable[0].price = this.totalprice;
+    },
+    //关联全选按钮
+    checkAllChoice(timegrop) {
+      if (timegrop[0].type == "info" || timegrop[5].type == "info") {
+        this.checked = false;
+      } else {
+        this.checked = true;
+      }
+    },
+    //改变的选中颜色
+    changrColor(value) {
+      if (value.type == "info") {
         value.type = "primary";
-        } else {
+      } else {
         value.type = "info";
-       }     
-       },
+      }
+    },
 
     //人名选择查找
-    findByNanme(){
-      if(this.accurateInputValue==''){
-         this.$message({
-          message: '输入名字不能为空哦~',
-          type: 'warning',
-          duration:1000,
-          showClose: true,
+    findByNanme() {
+      if (this.accurateInputValue == "") {
+        this.$message({
+          message: "输入名字不能为空哦~",
+          type: "warning",
+          duration: 1000,
+          showClose: true
         });
-      }else{
-        this.loading=true;
-        this.QueryRuesult=[]
+      } else {
+        this.loading = true;
+        this.QueryRuesult = [];
         let param = {
-      ask:1,
-      ask_word:"name",
-      ask_content:this.accurateInputValue
-      }     
-       http.findName(param).then(res=>{
-         console.log(res);
-         
-        let findres=res.data[0].infos 
-        if(findres==null){
+          ask: 1,
+          ask_word: "name",
+          ask_content: this.accurateInputValue
+        };
+        http.findName(param).then(res => {
+          console.log(res);
+
+          let findres = res.data[0].infos;
+          if (findres == null) {
             this.$message({
-          message: '暂无数据！',
-          duration:1000,       
+              message: "暂无数据！",
+              duration: 1000
+            });
+            this.loading = false;
+          } else {
+            this.QueryRuesult = findres;
+            this.loading = false;
+            // console.log(res);
+            this.$message({
+              message: "查询成功！",
+              type: "success",
+              duration: 1000
+            });
+          }
         });
-        this.loading=false
-        }else{
-              this.QueryRuesult=findres
-            this.loading=false;
-          // console.log(res);  
-           this.$message({
-          message: '查询成功！',
-          type: 'success',
-          duration:1000,       
-        }); 
-        }       
-      })
-      }    
+      }
     },
-    resetinput(){
-        // console.log('你输入了名字！');
-          this.QueryRuesult=[]
+    resetinput() {
+      // console.log('你输入了名字！');
+      this.QueryRuesult = [];
     },
-      // 条件选择查找省后返回市区
-    gethttpProvince(thisvalue){
-         //选择中的市返回查询
-       var choisecity={
-         ask:2,
-         ask_word:"province",
-         ask_content:thisvalue
-       }
-        //初始化其子选项
-          this.choesecities=""
-          this.choeseArea=""
-          this.choeseSchool=""
-          this.choeseClass=""
-          this.choeseName=""
-           http.findcitys(choisecity).then(res=>{         
-            this.cities=res.data[0].infos 
-        })              
+    // 条件选择查找省后返回市区
+    gethttpProvince(thisvalue) {
+      //选择中的市返回查询
+      var choisecity = {
+        ask: 2,
+        ask_word: "province",
+        ask_content: thisvalue
+      };
+      //初始化其子选项
+      this.choesecities = "";
+      this.choeseArea = "";
+      this.choeseSchool = "";
+      this.choeseClass = "";
+      this.choeseName = "";
+      http.findcitys(choisecity).then(res => {
+        this.cities = res.data[0].infos;
+      });
     },
     //条件选择查找市后返回区域
-    gethttpCities(value){
+    gethttpCities(value) {
       // console.log(value);
       //按条件查找区域的返回
-       var choioseareas={
-              ask:2,
-              ask_word:"city",
-              ask_content:value,
-              province:this.choeseprovince
-       }
-       //初始化其子选项
-          this.choeseArea=""
-          this.choeseSchool=""
-          this.choeseClass=""
-          this.choeseName=""
-        http.findareas(choioseareas).then(res=>{
-          // console.log(res);
-          this.areas=res.data[0].infos          
-        })     
+      var choioseareas = {
+        ask: 2,
+        ask_word: "city",
+        ask_content: value,
+        province: this.choeseprovince
+      };
+      //初始化其子选项
+      this.choeseArea = "";
+      this.choeseSchool = "";
+      this.choeseClass = "";
+      this.choeseName = "";
+      http.findareas(choioseareas).then(res => {
+        // console.log(res);
+        this.areas = res.data[0].infos;
+      });
     },
-     //按条件查找区域后返回学校
-    gethttpAreas(value){
-        // console.log(value);
-        //按条件查找学校返回值
-           var schoolFind={
-             ask:2,
-             ask_word:"district",
-             ask_content:value,
-             city:this.choesecities,
-              province:this.choeseprovince
-           }
-           //初始化其子选项
-           this.choeseSchool=""
-          this.choeseClass=""
-          this.choeseName=""
-           http.findSchool(schoolFind).then(res=>{
-            //  console.log(res);
-               this.schools=res.data[0].infos 
-           })       
+    //按条件查找区域后返回学校
+    gethttpAreas(value) {
+      // console.log(value);
+      //按条件查找学校返回值
+      var schoolFind = {
+        ask: 2,
+        ask_word: "district",
+        ask_content: value,
+        city: this.choesecities,
+        province: this.choeseprovince
+      };
+      //初始化其子选项
+      this.choeseSchool = "";
+      this.choeseClass = "";
+      this.choeseName = "";
+      http.findSchool(schoolFind).then(res => {
+        //  console.log(res);
+        this.schools = res.data[0].infos;
+      });
     },
     //按条件查询学校后返回班级
-      gethttpSchool(value){
-        // console.log(value);
-         //按条件查找班级返回值
-        var classFind={
-             ask:2,
-             ask_word:"school",
-             ask_content:value,
-             city:this.choesecities,
-             province:this.choeseprovince ,
-             district:this.choeseArea
-        }
-        //初始化其子选项
-          this.choeseClass=""
-          this.choeseName=""
-        http.findClass(classFind).then(res=>{
-          this.classes=res.data[0].infos           
-        })
-      },
-        //按条件查询班级后返回的姓名
-        gethttpClass(value){
-            var classFind={
-             ask:2,
-             ask_word:"class",
-             ask_content:value,
-             city:this.choesecities,
-             province:this.choeseprovince ,
-             district:this.choeseArea,
-             school:this.choeseSchool
-        }
-        //初始化其子选项
-        this.choeseName=""
-          http.findPerson(classFind).then(res=>{
-          this.names=res.data[0].infos  
-          console.log(res);
-                   
-        })
-        },
-         //条件查询后最终人名确定后触发的事件
-         lastchangeName(value){
-            console.log('你的名字是=>',value);
-            
-         },
-         //点击放大二维码
-      showDrawer(){
-        this.QRcode=! this.QRcode
-        // console.log(1111111111111111);       
-      },
-        //点击更换验证码
-        changeCheckImg(){
-          console.log('==========');
-         let v= confirm('切换二维码')
-         console.log(v);
-         
-        },
-       //点击全选按钮
-        checkAll(){
-          if(this.checked){
-            this.switchioes.forEach(item=>{
-             item.type="primary"
-           })   
-          }else{
-             this.switchioes.forEach(item=>{
-             item.type="info"
-           })
-          }
-          this.calcPrice()
-        },
-        //编程式导航
-        // toSearch(){
-        //   this.$router.push('/search')
-        // },
-        //条件选择后点击完成 信息是否选择完整
-        PersonIfo(){
-          console.log('点击了完成按钮');
-        
-        } ,
-        setAgreement(eve){
-            // console.log(eve); 
-             this.dialogVisible = false;
-             if(eve){
-               this.checkedAgreement=true
-              this.buttonType= "success";
-             }else {
-               this.checkedAgreement=false;
-               this.buttonType= "";
-             }         
-        }//协议栏同意是否 
-
+    gethttpSchool(value) {
+      // console.log(value);
+      //按条件查找班级返回值
+      var classFind = {
+        ask: 2,
+        ask_word: "school",
+        ask_content: value,
+        city: this.choesecities,
+        province: this.choeseprovince,
+        district: this.choeseArea
+      };
+      //初始化其子选项
+      this.choeseClass = "";
+      this.choeseName = "";
+      http.findClass(classFind).then(res => {
+        this.classes = res.data[0].infos;
+      });
+    },
+    //按条件查询班级后返回的姓名
+    gethttpClass(value) {
+      var classFind = {
+        ask: 2,
+        ask_word: "class",
+        ask_content: value,
+        city: this.choesecities,
+        province: this.choeseprovince,
+        district: this.choeseArea,
+        school: this.choeseSchool
+      };
+      //初始化其子选项
+      this.choeseName = "";
+      http.findPerson(classFind).then(res => {
+        this.names = res.data[0].infos;
+        console.log(res);
+      });
+    },
+    //条件查询后最终人名确定后触发的事件
+    lastchangeName(value) {
+      console.log("你的名字是=>", value);
+    },
+    //点击放大二维码
+    showDrawer() {
+      this.QRcode = !this.QRcode;
+      // console.log(1111111111111111);
+    },
+    //点击更换验证码
+    changeCheckCode() {
+      console.log("==========");
+         if(!this.statusCode){
+           alert('发送验证码方法')
+         }
+        	var vm = this;
+					if(vm.statusCode) return;
+						
+					vm.statusCode = true;
+					
+					var time = setInterval(() => {
+					  var residueTime = vm.residueTime;
+					  residueTime--;
+					  vm.residueTime = residueTime;
+				
+					  if (residueTime == 0) {
+						clearInterval(time);
+						vm.residueTime = 30
+						vm.statusCode = false;
+					  }
+					}, 1000);
+    },
+    //点击全选按钮
+    checkAll() {
+      if (this.checked) {
+        this.switchioes.forEach(item => {
+          item.type = "primary";
+        });
+      } else {
+        this.switchioes.forEach(item => {
+          item.type = "info";
+        });
+      }
+      this.calcPrice();
+    },
+    //编程式导航
+    // toSearch(){
+    //   this.$router.push('/search')
+    // },
+    //条件选择后点击完成 信息是否选择完整
+    PersonIfo() {
+      console.log("点击了完成按钮");
+    },
+    setAgreement(eve) {
+      // console.log(eve);
+      this.dialogVisible = false;
+      if (eve) {
+        this.checkedAgreement = true;
+        this.buttonType = "success";
+      } else {
+        this.checkedAgreement = false;
+        this.buttonType = "";
+      }
+    } //协议栏同意是否
   },
-  created(){
-   //选择中的省份返回查询
-   var choiseFind={
-     ask:2,
-     ask_word:"all"
-   }
-     http.findprocince(choiseFind).then(res=>{
+  created() {
+    //选择中的省份返回查询
+    var choiseFind = {
+      ask: 2,
+      ask_word: "all"
+    };
+    http.findprocince(choiseFind).then(res => {
       //  console.log(res);
-       this.provinces=res.data[0].infos      
-     })
-      // 生成6为随机码
-      // window.console.log(getsixstring());
-      
-  //选择中的市返回查询
-      //  var choisecity={
-      //    ask:2,
-      //    ask_word:"province",
-      //    ask_content:"广东省"
-      //  }
-      //      http.findcitys(choisecity).then(res=>{
-      //     console.log(res);
+      this.provinces = res.data[0].infos;
+    });
+    // 生成6为随机码
+    // window.console.log(getsixstring());
 
-      //   })
+    //选择中的市返回查询
+    //  var choisecity={
+    //    ask:2,
+    //    ask_word:"province",
+    //    ask_content:"广东省"
+    //  }
+    //      http.findcitys(choisecity).then(res=>{
+    //     console.log(res);
 
-  //按条件查找区域的返回
-      //  var choioseareas={
-      //        ask:2,
-      //         ask_word:"city",
-      //         ask_content:"深圳市",
-      //         province:"广东省"
-      //  }
-      //   http.findareas(choioseareas).then(res=>{
-      //     console.log(res);
-          
-      //   })
+    //   })
 
-               //按条件查找学校返回值
-          //  var schoolFind={
-          //    ask:2,
-          //    ask_word:"district",
-          //    ask_content:"龙岗区",
-          //    city:'深圳市',
-          //     province:"广东省"
-          //  }
-          //  http.findSchool(schoolFind).then(res=>{
-          //    console.log(res);
+    //按条件查找区域的返回
+    //  var choioseareas={
+    //        ask:2,
+    //         ask_word:"city",
+    //         ask_content:"深圳市",
+    //         province:"广东省"
+    //  }
+    //   http.findareas(choioseareas).then(res=>{
+    //     console.log(res);
 
-          //  })
-                     //按条件查找班级返回值
-        // var classFind={
-        //       ask:2,
-        //      ask_word:"school",
-        //      ask_content:"某某实验中学",
-        //      city:'深圳市',
-        //       province:"广东省" ,
-        //      district:"龙岗区"
-        // }
-        // http.findClass(classFind).then(res=>{
-        //   console.log(res);
-          
-        // })
+    //   })
 
-                  //按条件查找人名返回
-          var personFind = {
-                 ask:2,
-                 ask_word:"class",
-                 ask_content:"初三（1）班",
-                 city:"深圳市",
-                 province:"广东省" ,
-                 district:"龙岗区",
-                 school:"实验中心中学",       
-          }
-          http.findPerson(personFind).then(res=>{
-            console.log(res);          
-          })
+    //按条件查找学校返回值
+    //  var schoolFind={
+    //    ask:2,
+    //    ask_word:"district",
+    //    ask_content:"龙岗区",
+    //    city:'深圳市',
+    //     province:"广东省"
+    //  }
+    //  http.findSchool(schoolFind).then(res=>{
+    //    console.log(res);
 
+    //  })
+    //按条件查找班级返回值
+    // var classFind={
+    //       ask:2,
+    //      ask_word:"school",
+    //      ask_content:"某某实验中学",
+    //      city:'深圳市',
+    //       province:"广东省" ,
+    //      district:"龙岗区"
+    // }
+    // http.findClass(classFind).then(res=>{
+    //   console.log(res);
+
+    // })
+
+    //按条件查找人名返回
+    // var personFind = {
+    //        ask:2,
+    //        ask_word:"class",
+    //        ask_content:"初三（1）班",
+    //        city:"深圳市",
+    //        province:"广东省" ,
+    //        district:"龙岗区",
+    //        school:"实验中心中学",
+    // }
+    // http.findPerson(personFind).then(res=>{
+    //   console.log(res);
+    // })
   },
-  watch:{
-    queryExaTable:{
+  watch: {
+    queryExaTable: {
       //关闭详细查询时初始化相关数值
-      handler(newName, oldName){
+      handler(newName, oldName) {
         // console.log(newName);
-        if(!newName){
-           this.accurateInputValue='';
-           this.QueryRuesult=[];
-           this.loading=false;
-        }       
-      },    
+        if (!newName) {
+          this.accurateInputValue = "";
+          this.QueryRuesult = [];
+          this.loading = false;
+        }
+      },
+
     }
   }
-
 };
 </script>
 
@@ -1033,7 +1027,7 @@ export default {
   padding-left: 20px;
   /* height: 600px; */
 }
-.queryByCondition .close-btn{
+.queryByCondition .close-btn {
   margin-top: 30px;
 }
 .queryByCondition .chioeseQuery {
@@ -1048,13 +1042,16 @@ export default {
 .order-phone .check-number {
   margin-top: 20px;
 }
+.order-phone .provision{
+  margin-top: 20px;
+}
 /* .order-phone .check-number .check-img-box{
  display: inline-block;
 } */
-.order-phone .check-number img {
+/* .order-phone .check-number img {
   margin-left: 10px;
   margin-bottom: 20px;
-}
+} */
 .order-phone .agreeButton {
   margin-left: 20px;
   display: inline-block;
@@ -1066,18 +1063,18 @@ export default {
 .timeChoese {
   padding: 10px;
 }
-.timeChoese .clearfix{
-    position: relative;
+.timeChoese .clearfix {
+  position: relative;
 }
 .box-card .timeChoeseMoring {
   float: left;
   margin-left: 150px;
 }
-.timeChoese .check-all{
- position: absolute;
- right: 0;
- top: 0;
- }
+.timeChoese .check-all {
+  position: absolute;
+  right: 0;
+  top: 0;
+}
 .switchs-left {
   width: 95%;
   float: left;
@@ -1091,17 +1088,17 @@ export default {
 /* 下午时间选择卡片区域 */
 .timeChoeseAfernoon {
   margin-top: 10px;
-  margin-bottom:10px;
+  margin-bottom: 10px;
 }
-.timeChoeseAfernoon .card-afternoon{
-   width: 95%;
+.timeChoeseAfernoon .card-afternoon {
+  width: 95%;
   float: left;
   display: flex;
   flex-wrap: wrap;
   justify-content: space-around;
 }
 .timeChoeseAfernoon .card-afternoon div {
-    margin-bottom: 10px;
+  margin-bottom: 10px;
 }
 #toreturn {
   margin-left: 5px;
@@ -1118,45 +1115,44 @@ export default {
 }
 
 /* 预支付订单表格 */
-  .beforehandOrder .tableIfo{
-    margin-top: 10px;
-    margin-bottom: 10px;
-  }
-  .beforehandOrder .payWays{
-    margin: 0 0 10px 10px;
-  }
-  /* 订单回执处时间排列 */
-  .orderSuccess {
-    margin-bottom: 10px;
-  }
-  .orderSuccess .orderTag{
-      display: flex;
-       flex-wrap: wrap;
-       justify-content: space-around;
-  }
-  .orderSuccess .orderTitle {
-    line-height: 20px;
-  }
-  .orderSuccess .orderTag span {
-     margin-bottom: 10px;
-  }
-  .orderSuccess .thatcode img {
-    display: block;
-    margin: 0 auto;
-  }
-   .orderSuccess .thatcode p {
-     text-align: center;
-   }
-  /* 抽屉二维码定位 */
-   .drawerImg img{
-      margin: 0 auto;
-      display: block;
-   }
-   .drawerImg .btnClose{
-     margin-top: 10%;
-     margin-left: 40%;
-    
-   }
+.beforehandOrder .tableIfo {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+.beforehandOrder .payWays {
+  margin: 0 0 10px 10px;
+}
+/* 订单回执处时间排列 */
+.orderSuccess {
+  margin-bottom: 10px;
+}
+.orderSuccess .orderTag {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+}
+.orderSuccess .orderTitle {
+  line-height: 20px;
+}
+.orderSuccess .orderTag span {
+  margin-bottom: 10px;
+}
+.orderSuccess .thatcode img {
+  display: block;
+  margin: 0 auto;
+}
+.orderSuccess .thatcode p {
+  text-align: center;
+}
+/* 抽屉二维码定位 */
+.drawerImg img {
+  margin: 0 auto;
+  display: block;
+}
+.drawerImg .btnClose {
+  margin-top: 10%;
+  margin-left: 40%;
+}
 .el-row {
   margin-bottom: 20px;
   line-height: 33px;
@@ -1182,5 +1178,4 @@ export default {
   padding: 10px 0;
   background-color: #f9fafc;
 }
-
 </style>
