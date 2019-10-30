@@ -8,7 +8,12 @@ import './assets/icon-font.css'
 import './assets/base.css'
 //注册中间件
 Vue.use(ElementUI);
- 
+// window.axios = require('axios');
+
+// window.axios.defaults.headers.common = {
+//     'X-CSRF-TOKEN':document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+//     'X-Requested-With': 'XMLHttpRequest'
+// };
  //导入自定义路由模块
 import router from './router/router.js'
 Vue.config.productionTip = false

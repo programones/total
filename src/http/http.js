@@ -1,83 +1,116 @@
 import axios from 'axios'
 export const http = axios.create({
     // baseURL: 'http://127.168.2.199/' //本机ip
-    baseURL: 'https://bi.psvideo.cn/'
+    baseURL: 'https://bi.psvideo.cn/ts/',
+    headers: {
+        'Content-Type': "application/json;charset=utf-8"
+      }    
+    // headers:{'Content-Type':'application/x-www-form-urlencoded'}
   })
   //人名查询请求
-  let search = 'getdata_anchor.php'
+
+  let search = 'getAnchor'
 http.findName = ({
-    ask,ask_word,ask_content
+    timeshare_id,ask,ask_word,ask_content
 }) => {
     return http.get(search,{params: {
-        ask,ask_word,ask_content
+        timeshare_id,ask,ask_word,ask_content
       }})
   }
+
 //按条件查询省
 http.findprocince=({
-ask,ask_word
+    timeshare_id,ask,ask_word,ask_content
 })=>{
-    return http.get(search,{
-       params:{
-        ask,ask_word   
-       }
+    return http.get(search,{params:   
+       {timeshare_id,ask,ask_word,ask_content}      
     })
 }
+
 //按条件查找市
 http.findcitys=({
-    ask,ask_word,ask_content
+    timeshare_id,ask,ask_word,ask_content
 })=>{
     return http.get(search,{
         params:{
-ask,ask_word,ask_content
+      timeshare_id,ask,ask_word,ask_content
         }
     })
 }
 //按条件查找区
 http.findareas=({
-    ask,ask_word,ask_content,province
+    timeshare_id,ask,ask_word,ask_content,province
 })=>{
    return http.get(search,{
      params:{
-        ask,ask_word,ask_content,province 
+        timeshare_id,ask,ask_word,ask_content,province 
      }  
    })
 }
 //按条件查找学校
 http.findSchool=({
-    ask,ask_word,ask_content,city,province
+    timeshare_id,ask,ask_word,ask_content,city,province
 })=>{ 
     return http.get(search,{
-        params:{  ask,ask_word,ask_content,city,province
+        params:{  timeshare_id,ask,ask_word,ask_content,city,province
         }
     })
 }
 //按条件查找班级返回
 http.findClass=({
-    ask,ask_word,ask_content,district,city,province
+    timeshare_id,ask,ask_word,ask_content,district,city,province
 })=>{
     return http.get(search,{
         params:{
-            ask,ask_word,ask_content,district,city,province
+            timeshare_id,ask,ask_word,ask_content,district,city,province
         }
     })
 }
 //条件查找人名返回
-// http.findOnes=({
-//     ask,ask_word,ask_content,district,school,city,province
-// })=>{
-//     return http.get(search,{
-//      params:{
-//         ask,ask_word,ask_content,district,school,city,province
-//      }
-//     })
-// }
-
 http.findPerson=({
-    ask,ask_word,ask_content,district,city,province,school
+    timeshare_id,ask,ask_word,ask_content,district,city,province,school
 })=>{
     return http.get(search,{
         params:{
-            ask,ask_word,ask_content,district,city,province,school
+            timeshare_id,ask,ask_word,ask_content,district,city,province,school
         }
     })
 }
+//点击人名返回个人的详细信息
+  http.pesonalInfo=({
+    timeshare_id,ask,ask_word,ask_content,district,city,province,school,ts_class
+  })=>{
+     return http.get(search,{
+        params:{
+            timeshare_id,ask,ask_word,ask_content,district,city,province,school,ts_class        
+        } 
+     })
+ }
+ //获取项目相关信息
+ http.getProIfo=({id})=>{
+     return http.get('getPrj',{
+       params:{
+        id
+       }  
+     })
+ }
+// request拦截器
+// http.interceptors.request.use(
+//     config => {
+      
+//       config.headers['Content-Type'] = 'application/x-www-form-urlencoded' 
+//       if (config.method === 'post') { 
+//         config.data = qs.stringify({
+//           ...config.data
+//         })
+//       }
+  
+ 
+//       return config
+//     },
+//     error => {
+//       // Do something with request error
+//       console.log(error) // for debug
+//       Promise.reject(error)
+//     }
+//   )

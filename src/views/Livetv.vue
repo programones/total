@@ -1,18 +1,22 @@
 <template>
-  <div>
+  <div class="container">
     <!-- 栅格布局 -->
     <el-row>
       <el-col :span="24">
         <div class="grid-content bg-purple-dark">
           <!-- 面包屑 -->
           <!-- <span id="toreturn">◀返回</span> -->
-          <span class="title">素质教育直播付费预约</span>
+          <span class="title">{{getProgramIfo.title}}</span>
         </div>
       </el-col>
     </el-row>
     <div class="navbox">
       <el-tabs :tab-position="tabPosition" style="height:600px;" v-model="active1">
         <el-tab-pane label="查询" name="1">
+          <div class="aboutDescription">
+            <h3>特色介绍</h3>
+            <div class="content">{{getProgramIfo.description}}</div>
+            </div>
           <!-- 点击显示抽屉栏 -->
           <div class="queryChoose">选择查询方式:</div>
           <div class="queryButton">
@@ -35,13 +39,18 @@
               </div>
               <div class="tableContent">
                 <!-- 表格显示 -->
-                <el-table :data="QueryRuesult" border style="width: 100%" v-loading="loading">
+                <el-table :data="QueryRuesult" border style="width: 100%" v-loading="loading"  highlight-current-row  @current-change="handleChangeName">
                   <el-table-column prop="name" label="姓名"></el-table-column>
 
+                  <el-table-column prop="sex" label="性别"></el-table-column>
                   <el-table-column prop="school" label="学校"></el-table-column>
                   <el-table-column prop="class" label="班级"></el-table-column>
                 </el-table>
               </div>
+               <div class="close-btn">
+                  <el-button size="small" type="success" @click="PersonIfoName">完成</el-button>
+                </div>
+               
             </div>
           </el-drawer>
 
@@ -144,10 +153,39 @@
                   </el-select>
                 </div>
               </div>
-              <div class="close-btn">
+             
+            </div>
+            <!-- 查询结果表格显示 -->
+                 <div class="choiceQuery-result">
+                  <el-table
+                   :data="querytableData"
+                   border
+                   style="width: 100%"
+                    highlight-current-row
+                   @current-change="handleCurrentChange">
+                   <el-table-column
+                     prop="name"
+                     label="姓名"
+                     width="100">
+                   </el-table-column>
+                   <el-table-column
+                     prop="school"
+                     label="学校"
+                     width="100">
+                   </el-table-column>
+                   <el-table-column
+                     prop="class"
+                     label="班级">
+                   </el-table-column>
+                   <el-table-column
+                     prop="sex"
+                     label="性别">
+                   </el-table-column>
+                 </el-table>
+               </div>
+                <div class="close-btn">
                 <el-button size="small" type="success" @click="PersonIfo">完成</el-button>
               </div>
-            </div>
           </el-drawer>
           <div class="nextStep">
             <el-button size="small" @click="next" :disabled="btndisabled_one">下一步</el-button>
@@ -155,7 +193,7 @@
         </el-tab-pane>
 
         <!-- 预约table栏 -->
-        <el-tab-pane label="预约" name="2" :disabled="value2" lazy>
+        <el-tab-pane label="预约" name="2" :disabled="orderForbid" lazy>
           <div class="order-phone">
             <div class="phoneNumber">
               <!-- input手机号码输入框 -->
@@ -208,7 +246,7 @@
               <div slot="header" class="clearfix">
                 <span class="cardMoring">预约上午</span>
                 <div class="check-all">
-                  <el-checkbox v-model="checked" @change="checkAll">全 选</el-checkbox>
+                  <!-- <el-checkbox v-model="checked" @change="checkAll">全 选</el-checkbox> -->
                 </div>
               </div>
               <!-- 上午时间选择卡片区域 -->
@@ -302,13 +340,13 @@
             </div>
             <div class="payWays">
               请选择支付方式：
-              <el-button type="success" plain size="mini">
+              <el-button type="success" plain size="mini" @click="wechatPay">
                 <i class="iconfont icon-weixin"></i> 微 信
               </el-button>
-              <el-button type="primary" plain size="mini">
+              <!-- <el-button type="primary" plain size="mini">
                 <i class="iconfont icon-zhifubao"></i>支付宝
               </el-button>
-              <el-button plain size="small" icon="el-icon-more">其他</el-button>
+              <el-button plain size="small" icon="el-icon-more">其他</el-button> -->
             </div>
             <el-divider></el-divider>
             <el-button size="small" @click="top">上一步</el-button>
@@ -358,7 +396,7 @@
         </el-tab-pane>
       </el-tabs>
       <!-- 弹出条框内容 -->
-      <el-dialog title="条款内容" :visible.sync="dialogVisible" width="95%" fullscreen>
+      <el-dialog  :visible.sync="dialogVisible" width="95%" fullscreen>
         <!-- <span>
           正文与附件作为合同文本的整体结构内容时，它们共同表现出了以下三个特征：结构均衡、适从交易、贯通全文。
           结构均衡特征是指不论合同文本使用于何种交易，它的整体结构应是相互衔接，并且是相互补充的。相互衔接是指正文与附件之间存在的依据是有机相连，不是无故而生。其内容是互补性的，而不是重复的。通过互补对交易的权利与义务进行完善与明确。
@@ -384,7 +422,18 @@
         </div>
       </div>
     </el-drawer>
-  </div>
+     <!-- 进入页面的遮罩层 -->
+      <div class="cover">  
+    <el-dialog
+           :visible.sync="firstSeeImg"
+            fullscreen
+           >
+           <p class="countdownTime">还有{{ImgCloseTime}}秒关闭</p>
+           <img :src="'https://bi.psvideo.cn/'+getProgramIfo.pic" alt="" width="100%" height="100%">
+           <!-- <div class="cover-img" :style="'background: url(https://bi.psvideo.cn/'+getProgramIfo.pic+')'+ 'no-repeat center center; background-size:cover;height:100%;width:100%;'"></div> -->
+      </el-dialog>
+      </div>
+ </div>
 </template>
 
 <script>
@@ -401,7 +450,6 @@ export default {
       active1: "1",
       checkedAgreement: false,
       checked: false,
-      value2: false,
       loading: false,
       switchioes: [
         {
@@ -522,7 +570,7 @@ export default {
       inputphoneNumber: "",
       inputcheckNumber: "",
       queryExaTable: false,
-      querytable: false,
+      querytable: false,//选择查询的显示隐藏
       accurateInputValue: "",
       activeNames: ["1", "2", "3"],
       QueryRuesult: [],
@@ -540,6 +588,10 @@ export default {
       classes: [],
       names: [],
       totalprice: 0.0,
+      querytableData:[],//选择查询处的表格数组
+      saveNameQueryData:null,//存储点击人名选中后的个人信息
+      savePersonData:null,//储存条件筛选后的个人信息
+      getProgramIfo:{},//获取项目的详细信息
       beforehandTable: [
         {
           name: "小明明",
@@ -568,14 +620,17 @@ export default {
       orderTimeArr: [],
       QRcode: false, //二维码抽屉
       huizi: true, //回执处的禁止选择
-      yudingdan: false, //预订单禁止选择
-      timechoice: false, //时间选择禁止选择
+      yudingdan: true, //预订单禁止选择
+      timechoice: true, //时间选择禁止选择
+      orderForbid:true,//预约处禁止选择
       btndisabled_one: true, //下一步按钮禁用状态
       btndisabled_two: true, //下一步按钮禁用状态
       btndisabled_three: true, //下一步按钮禁用状态
       btndisabled_four: true, //下一步按钮禁用状态
       statusCode: false,//控制验证码是否显示
       residueTime:30,//多少秒后重新获取
+      firstSeeImg:true,//控制进入页面的遮罩层图片是否显示
+      ImgCloseTime:5,//进入页面图片关闭倒计时
     };
   },
 
@@ -593,27 +648,47 @@ export default {
       this.active1 = topNumber - 1 + "";
       document.documentElement.scrollTop = 0;
     },
-    //输入电话号码的核实
+    //输入框验证码的核实
     checkPhone() {
-      if (this.inputphoneNumber == "") {
-        this.$message({
+         if(this.inputcheckNumber.length!=4){
+          this.$message({
           showClose: true,
-          message: "手机号码不能为空!",
+          message: "验证码格式错误!",
           duration: 1000
         });
-      } else {
-        let regExp = /^(\+?0?86\-?)?1[345789]\d{9}$/;
-        // console.log(regExp.test(this.inputphoneNumber));
-        if (!regExp.test(this.inputphoneNumber)) {
-          this.$message({
-            showClose: true,
-            message: "请输入正确的手机号码！",
-            type: "error",
-            duration: 1000
-          });
-        }
-      }
+       }else if(this.inputcheckNumber.length==4 && this.checkedAgreement){
+         this.btndisabled_two=false;
+         this.timechoice=false;
+         this.active1='3'
+       }
     },
+     //预约处验证码的发送
+     getCode(){
+            if(!this.statusCode){
+           alert('发送验证码方法')
+           //预约处手机号码的验证
+         }
+        	var vm = this;
+					if(vm.statusCode) return;
+						
+					vm.statusCode = true;
+					
+					var time = setInterval(() => {
+					  var residueTime = vm.residueTime;
+					  residueTime--;
+					  vm.residueTime = residueTime;
+				
+					  if (residueTime == 0) {
+						clearInterval(time);
+						vm.residueTime = 30
+						vm.statusCode = false;
+					  }
+					}, 1000);
+     },
+     //预约处手机号码的验证
+     checkPhoneRight(){
+
+     },
     cliscksure() {
       this.dialogVisible = true;
     },
@@ -680,6 +755,14 @@ export default {
       //选中时间后的价格的计算
       this.totalprice = priceAll / 100;
       this.beforehandTable[0].price = this.totalprice;
+      //点亮下一步按钮和预订单
+      if(this.totalprice!=0){
+        this.yudingdan=false;
+        this.btndisabled_three=false;
+      }else{
+          this.yudingdan=true;
+        this.btndisabled_three=true;
+      }
     },
     //关联全选按钮
     checkAllChoice(timegrop) {
@@ -697,8 +780,7 @@ export default {
         value.type = "info";
       }
     },
-
-    //人名选择查找
+    //人名查询选择查找
     findByNanme() {
       if (this.accurateInputValue == "") {
         this.$message({
@@ -711,14 +793,16 @@ export default {
         this.loading = true;
         this.QueryRuesult = [];
         let param = {
+          timeshare_id:1,
           ask: 1,
           ask_word: "name",
           ask_content: this.accurateInputValue
         };
         http.findName(param).then(res => {
           console.log(res);
+          console.log(res.data.data[0].infos[0]);
 
-          let findres = res.data[0].infos;
+          let findres = res.data.data[0].infos;
           if (findres == null) {
             this.$message({
               message: "暂无数据！",
@@ -746,6 +830,7 @@ export default {
     gethttpProvince(thisvalue) {
       //选择中的市返回查询
       var choisecity = {
+        timeshare_id:1,
         ask: 2,
         ask_word: "province",
         ask_content: thisvalue
@@ -756,8 +841,11 @@ export default {
       this.choeseSchool = "";
       this.choeseClass = "";
       this.choeseName = "";
+      this.querytableData=[];
       http.findcitys(choisecity).then(res => {
-        this.cities = res.data[0].infos;
+          console.log(res);
+          
+        this.cities =  res.data.data[0].infos;
       });
     },
     //条件选择查找市后返回区域
@@ -765,6 +853,7 @@ export default {
       // console.log(value);
       //按条件查找区域的返回
       var choioseareas = {
+        timeshare_id:1,
         ask: 2,
         ask_word: "city",
         ask_content: value,
@@ -775,9 +864,10 @@ export default {
       this.choeseSchool = "";
       this.choeseClass = "";
       this.choeseName = "";
+      this.querytableData=[];
       http.findareas(choioseareas).then(res => {
-        // console.log(res);
-        this.areas = res.data[0].infos;
+        console.log(res);
+        this.areas = res.data.data[0].infos;
       });
     },
     //按条件查找区域后返回学校
@@ -785,6 +875,7 @@ export default {
       // console.log(value);
       //按条件查找学校返回值
       var schoolFind = {
+        timeshare_id:1,
         ask: 2,
         ask_word: "district",
         ask_content: value,
@@ -795,9 +886,10 @@ export default {
       this.choeseSchool = "";
       this.choeseClass = "";
       this.choeseName = "";
+      this.querytableData=[];
       http.findSchool(schoolFind).then(res => {
         //  console.log(res);
-        this.schools = res.data[0].infos;
+        this.schools = res.data.data[0].infos;
       });
     },
     //按条件查询学校后返回班级
@@ -805,6 +897,7 @@ export default {
       // console.log(value);
       //按条件查找班级返回值
       var classFind = {
+        timeshare_id:1,
         ask: 2,
         ask_word: "school",
         ask_content: value,
@@ -815,59 +908,79 @@ export default {
       //初始化其子选项
       this.choeseClass = "";
       this.choeseName = "";
+      this.querytableData=[];
       http.findClass(classFind).then(res => {
-        this.classes = res.data[0].infos;
+        this.classes = res.data.data[0].infos;
       });
     },
     //按条件查询班级后返回的姓名
     gethttpClass(value) {
       var classFind = {
+        timeshare_id:1,
         ask: 2,
         ask_word: "class",
         ask_content: value,
         city: this.choesecities,
         province: this.choeseprovince,
         district: this.choeseArea,
-        school: this.choeseSchool
+        school: this.choeseSchool,    
       };
       //初始化其子选项
       this.choeseName = "";
+       this.querytableData=[];
       http.findPerson(classFind).then(res => {
-        this.names = res.data[0].infos;
+        this.names =res.data.data[0].infos;
         console.log(res);
       });
     },
     //条件查询后最终人名确定后触发的事件
     lastchangeName(value) {
       console.log("你的名字是=>", value);
+       var param = {
+          timeshare_id:1,
+          ask: 2,
+          ask_word: "name",
+          ask_content: value,
+          city: this.choesecities,
+          province: this.choeseprovince,
+          district: this.choeseArea,
+          school: this.choeseSchool,
+          ts_class:this.choeseClass
+        };
+      http.pesonalInfo(param).then(res=>{
+        console.log(res);
+        this.querytableData = res.data.data[0].infos;
+      })  
+      
     },
     //点击放大二维码
     showDrawer() {
       this.QRcode = !this.QRcode;
       // console.log(1111111111111111);
     },
-    //点击更换验证码
+    //点击发送或更换验证码
     changeCheckCode() {
       console.log("==========");
-         if(!this.statusCode){
-           alert('发送验证码方法')
-         }
-        	var vm = this;
-					if(vm.statusCode) return;
-						
-					vm.statusCode = true;
-					
-					var time = setInterval(() => {
-					  var residueTime = vm.residueTime;
-					  residueTime--;
-					  vm.residueTime = residueTime;
-				
-					  if (residueTime == 0) {
-						clearInterval(time);
-						vm.residueTime = 30
-						vm.statusCode = false;
-					  }
-					}, 1000);
+                 if (this.inputphoneNumber == "") {
+             this.$message({
+               showClose: true,
+               message: "手机号码不能为空!",
+               duration: 1000
+             });
+            } else if(this.inputphoneNumber.length==11){
+              this.getCode()
+           }else{
+                 let regExp = /^(\+?0?86\-?)?1[345789]\d{9}$/;           
+             if (!regExp.test(this.inputphoneNumber)) {
+               this.$message({
+                 showClose: true,
+                 message: "请输入正确的手机号码！",
+                 type: "error",
+                 duration: 1000
+               });       
+             }
+           }
+     
     },
     //点击全选按钮
     checkAll() {
@@ -882,15 +995,49 @@ export default {
       }
       this.calcPrice();
     },
-    //编程式导航
-    // toSearch(){
-    //   this.$router.push('/search')
-    // },
     //条件选择后点击完成 信息是否选择完整
     PersonIfo() {
-      console.log("点击了完成按钮");
+      // console.log(this.savePersonData);
+      // console.log(this.savePersonData!=null);
+      
+      if(this.savePersonData==null){
+         this.$message({
+              message: "请确认查询信息完整",
+              type: "warning",
+              duration: 1000
+            });
+           
+      }else{
+      this.btndisabled_one=false;
+           this.orderForbid=false; 
+             this.querytable=false
+      }
+      
     },
-    setAgreement(eve) {
+    handleChangeName(val){//人名查找后点击选中表格中的数据
+      console.log(val);
+      this.saveNameQueryData=val 
+    },
+    handleCurrentChange(val){ //条件筛选后点击选中表格中的数据
+      console.log(val);
+      this.savePersonData=val
+    },
+    PersonIfoName(){ //人名查找信息后点击完成按钮
+    //  let keyItemsArr = Object.keys(this.saveNameQueryData)
+      // console.log(keyItemsArr);
+      if(this.saveNameQueryData!=null){
+      this.btndisabled_one=false;
+      this.orderForbid=false; 
+      this.queryExaTable=false
+      }else {
+      this.$message({
+       message: "请点击表格确认学生信息",
+      type: "warning",
+      duration: 1000
+      })
+      }  
+    },
+    setAgreement(eve) {//协议栏同意是否
       // console.log(eve);
       this.dialogVisible = false;
       if (eve) {
@@ -900,18 +1047,46 @@ export default {
         this.checkedAgreement = false;
         this.buttonType = "";
       }
-    } //协议栏同意是否
+    }, 
+    wechatPay(){//微信支付
+      this.btndisabled_four=false;
+      this.huizi=false;  
+    },
+    ImgClosed(){ //图片关闭倒计时的方法
+      	var vm = this;	
+					var timeId = setInterval(() => {
+					  var ImgCloseTime = vm.ImgCloseTime;
+					  ImgCloseTime--;
+					  vm.ImgCloseTime = ImgCloseTime;
+				
+					  if (ImgCloseTime == 0) {
+						clearInterval(timeId);
+            vm.ImgCloseTime = 5;
+            vm.firstSeeImg=false
+					  }
+					}, 1000);
+    },
+    //储存当前时间的localstorage
+    
   },
   created() {
     //选择中的省份返回查询
     var choiseFind = {
+      timeshare_id:1,
       ask: 2,
-      ask_word: "all"
+      ask_word: "all",
+      ask_content:1
     };
     http.findprocince(choiseFind).then(res => {
       //  console.log(res);
-      this.provinces = res.data[0].infos;
+      this.provinces = res.data.data[0].infos;
     });
+     http.getProIfo({id:1}).then(res =>{//获取标题封面图片路径等信息
+      
+       this.getProgramIfo=res.data.data[0].infos[0];
+        console.log( this.getProgramIfo);
+     })
+    
     // 生成6为随机码
     // window.console.log(getsixstring());
 
@@ -978,19 +1153,22 @@ export default {
     //   console.log(res);
     // })
   },
+  mounted(){
+    this.ImgClosed();//进入页面前图片关闭的方法
+  },
   watch: {
-    queryExaTable: {
-      //关闭详细查询时初始化相关数值
-      handler(newName, oldName) {
-        // console.log(newName);
-        if (!newName) {
-          this.accurateInputValue = "";
-          this.QueryRuesult = [];
-          this.loading = false;
-        }
-      },
+    // queryExaTable: {
+    //   //关闭详细查询时初始化相关数值
+    //   handler(newName, oldName) {
+    //     // console.log(newName);
+    //     if (!newName) {
+    //       this.accurateInputValue = "";
+    //       this.QueryRuesult = [];
+    //       this.loading = false;
+    //     }
+    //   },
 
-    }
+    // }
   }
 };
 </script>
@@ -1001,8 +1179,37 @@ export default {
 .title {
   font-size: 15px;
 }
+.container{
+  position: relative;
+}
+.container .cover {
+  width: 100%;
+  height: 100%;
+}
+ .container .cover .el-dialog__header {
+   padding: 0;
+ }
+   .container .cover .el-dialog__body {
+    padding: 0; 
+     }
 .navbox {
   padding: 0 0 5px 5px;
+}
+.cover {
+  position: relative;
+}
+.cover .countdownTime{
+    position: absolute;
+    top: 22px;
+    right: 34px;
+}
+.navbox .aboutDescription .content {
+    color: #6b9eff;
+    font-size: 16px;
+    line-height: 25px;
+    text-indent: 30px;
+    margin-top: 10px;
+
 }
 .queryChoose {
   line-height: 50px;
@@ -1027,6 +1234,9 @@ export default {
   padding-left: 20px;
   /* height: 600px; */
 }
+ .choiceQuery-result {
+  margin-top: 20px;
+}
 .queryByCondition .close-btn {
   margin-top: 30px;
 }
@@ -1035,6 +1245,9 @@ export default {
 }
 .queryByCondition .atips {
   line-height: 30px;
+}
+.el-drawer.ltr, .el-drawer.rtl, .el-drawer__container {
+  height: 150%;
 }
 .order-phone {
   padding-left: 20px;
