@@ -4,6 +4,8 @@ import App from './App.vue'
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 import './assets/icon-font.css'
+import axios from 'axios'
+Vue.prototype.$axios = axios;
 //样式初始化
 import './assets/base.css'
 //注册中间件

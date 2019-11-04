@@ -1,15 +1,18 @@
 import axios from 'axios'
 export const http = axios.create({
     // baseURL: 'http://127.168.2.199/' //本机ip
-    baseURL: 'https://bi.psvideo.cn/ts/',
-    headers: {
-        'Content-Type': "application/json;charset=utf-8"
-      }    
-    // headers:{'Content-Type':'application/x-www-form-urlencoded'}
-  })
+    baseURL: 'https://bi.psvideo.cn/',
+    headers: { 'Content-Type': "application/json;charset=utf-8" },  
+    // headers:{'Content-Type':'application/x-www-form-urlencoded; charset=UTF-8'}
+  });
+//   export let httpNum = axios.create({
+//     baseURL: 'https://bi.psvideo.cn/timeshare/wx_share',
+//     headers: { 'Content-Type': "application/json;charset=utf-8" }  ,  
+
+//   });
   //人名查询请求
 
-  let search = 'getAnchor'
+  let search = 'timeshare/getAnchor'
 http.findName = ({
     timeshare_id,ask,ask_word,ask_content
 }) => {
@@ -88,12 +91,49 @@ http.findPerson=({
  }
  //获取项目相关信息
  http.getProIfo=({id})=>{
-     return http.get('getPrj',{
+     return http.get('timeshare/getPrj',{
        params:{
         id
        }  
      })
  }
+ //发送手机验证码接口
+ http.getCPhoneode=(mobile)=>{
+    return http.post("/api/send_code",{
+        mobile
+    })  
+  }
+  //发送验证码后登陆信息接口
+  http.loginIfo=({iuid,timeshare_id,mobile,mobile_code,openid})=>{
+      return http.post('/timeshare/login',{
+        iuid,timeshare_id,mobile,mobile_code,openid    
+      })
+  }
+
+    //获取微信授权的请求
+    http.getwxIfo=(url)=>{
+     return http.get('/api/wx_url',{
+         params:{url}
+     })         
+    }
+   //获取用户信息的回调函数    
+   http.getwxUserIfo=(code)=>{
+    return http.get('/api/oauth_callback',{
+       params:{code}
+    })
+   }
+   //微信分享设置
+   http.weixinshare=()=>{
+       return http.post('timeshare/wx_share')
+   }
+   //时间选择处数据的获取
+   http.getTimeArr=(ts_id)=>{
+       return http.get('/timeshare/getGoods',{
+           params:{
+            ts_id
+           }
+       })
+   }
 // request拦截器
 // http.interceptors.request.use(
 //     config => {
@@ -114,3 +154,10 @@ http.findPerson=({
 //       Promise.reject(error)
 //     }
 //   )
+
+// axios.interceptors.request.use((config) => {
+//     config.headers['X-Requested-With'] = 'XMLHttpRequest';
+//     let regex = /.*csrftoken=([^;.]*).*$/; // 用于从cookie中匹配 csrftoken值
+//     config.headers['X-CSRFToken'] = document.cookie.match(regex) === null ? null : document.cookie.match(regex)[1];
+//     return config
+//   });

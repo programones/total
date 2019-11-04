@@ -1,15 +1,15 @@
 <template>
   <div class="container">
     <!-- 栅格布局 -->
-    <el-row>
+    <!-- <el-row>
       <el-col :span="24">
-        <div class="grid-content bg-purple-dark">
+        <div class="grid-content bg-purple-dark"> -->
           <!-- 面包屑 -->
           <!-- <span id="toreturn">◀返回</span> -->
-          <span class="title">{{getProgramIfo.title}}</span>
+          <!-- <span class="title">{{getProgramIfo.title}}</span>
         </div>
       </el-col>
-    </el-row>
+    </el-row> -->
     <div class="navbox">
       <el-tabs :tab-position="tabPosition" style="height:600px;" v-model="active1">
         <el-tab-pane label="查询" name="1">
@@ -17,6 +17,7 @@
             <h3>特色介绍</h3>
             <div class="content">{{getProgramIfo.description}}</div>
             </div>
+             <el-divider></el-divider>
           <!-- 点击显示抽屉栏 -->
           <div class="queryChoose">选择查询方式:</div>
           <div class="queryButton">
@@ -32,6 +33,7 @@
                   placeholder="请输入名字"
                   v-model.trim="accurateInputValue"
                   clearable
+                  maxlength=5
                   style="width:60%"
                   @clear="resetinput"
                 ></el-input>
@@ -251,8 +253,9 @@
               </div>
               <!-- 上午时间选择卡片区域 -->
               <div class="switchs-left">
-                <div v-for="(item,i) in switchioes" :key="item.value" class="text item">
+                <div v-for="(item,i) in switchioes" :key="item.id" class="text item">
                   <el-button
+                   :disabled="item.checked"
                     :type="item.type"
                     round
                     size="mini"
@@ -271,9 +274,10 @@
                 </div>
                 <!-- 下午时间选择区域 -->
                 <div class="card-afternoon">
-                  <div v-for="(item,j) in switchioesTwo" :key="item.value" class="text item">
+                  <div v-for="(item,j) in switchioesTwo" :key="item.id" class="text item">
                     <!-- {{item.value}} -->
                     <el-button
+                       :disabled="item.checked"
                       :type="item.type"
                       round
                       size="mini"
@@ -292,9 +296,10 @@
                 </div>
                 <!-- 下午时间选择区域 -->
                 <div class="card-afternoon">
-                  <div v-for="(item,f) in switchioesThree" :key="item.value" class="text item">
+                  <div v-for="(item,f) in switchioesThree" :key="item.id" class="text item">
                     <!-- {{item.value}} -->
                     <el-button
+                     :disabled="item.checked"
                       :type="item.type"
                       round
                       size="mini"
@@ -326,17 +331,24 @@
                 <el-table-column prop="name" label="姓名" width="60px" fixed></el-table-column>
                 <el-table-column prop="class" label="班级"></el-table-column>
                 <el-table-column prop="school" label="学校"></el-table-column>
-                <el-table-column prop="time" label="预约时段" width="120px">
-                  <!-- <p v-if="totalprice==0">未选择时段</p> -->
-                  <el-tag
-                    type="warning"
-                    size="mini"
-                    v-for="item in orderTimeArr"
-                    :key="item.value"
-                  >{{item.value}}</el-tag>
+                <el-table-column prop="sex" label="性别">                                        
                 </el-table-column>
                 <el-table-column prop="price" label="总费用(单位/元)"></el-table-column>
               </el-table>
+            </div>
+            <div class="timechice-show">
+               <el-collapse v-model="activeArr">
+                <el-collapse-item title="预约的时段" name="4">
+               <div class="orderTag">
+                <el-tag
+                  v-for="item in orderTimeArr"
+                 :key="item.value"
+                 type="warning"
+                 size="mini"          
+               >{{item.value}}</el-tag>
+               </div>
+              </el-collapse-item>
+               </el-collapse>
             </div>
             <div class="payWays">
               请选择支付方式：
@@ -354,7 +366,9 @@
           </div>
         </el-tab-pane>
         <!-- 六、订单回执 -->
-        <el-tab-pane label="预约回执" name="5" lazy :disabled="huizi">
+        <el-tab-pane label="预约回执" name="5" lazy :disabled="huizi"
+         element-loading-text="回执生成中..."  
+        v-loading.fullscreen.lock="fullscreenLoading">
           <div class="orderSuccess">
             <!-- <p class="orderTitle">预约回执</p> -->
             <el-collapse v-model="activeNames">
@@ -397,12 +411,6 @@
       </el-tabs>
       <!-- 弹出条框内容 -->
       <el-dialog  :visible.sync="dialogVisible" width="95%" fullscreen>
-        <!-- <span>
-          正文与附件作为合同文本的整体结构内容时，它们共同表现出了以下三个特征：结构均衡、适从交易、贯通全文。
-          结构均衡特征是指不论合同文本使用于何种交易，它的整体结构应是相互衔接，并且是相互补充的。相互衔接是指正文与附件之间存在的依据是有机相连，不是无故而生。其内容是互补性的，而不是重复的。通过互补对交易的权利与义务进行完善与明确。
-          适从交易特征是指合同结构的简繁不是依形式而定，而是依交易实际特征而定的。换句话说，合同结构服从交易的需要。交易要求复杂时，合同结构就复杂；反之，则简单。 贯通全文特征是指合同正文与附件的文字用词要语意一致，绝无丝毫异议。同时描述的当事人权利与义务在正文与附件中具有严格的一致性。该特征决定了撰稿人或多个撰稿人的工作规范，尤其多个撰稿人存在时，对总审校人提出了明确的要求。该项特征提出的问题若不能保证，谈判就会失去目标或完成不了谈判任务。即便表面上完成了谈判，执行中也会重燃战火。
-        </span>-->
-
         <agrement @setAgreement="setAgreement"></agrement>
 
         <span slot="footer" class="dialog-footer">
@@ -429,8 +437,7 @@
             fullscreen
            >
            <p class="countdownTime">还有{{ImgCloseTime}}秒关闭</p>
-           <img :src="'https://bi.psvideo.cn/'+getProgramIfo.pic" alt="" width="100%" height="100%">
-           <!-- <div class="cover-img" :style="'background: url(https://bi.psvideo.cn/'+getProgramIfo.pic+')'+ 'no-repeat center center; background-size:cover;height:100%;width:100%;'"></div> -->
+           <img :src="baseUrl+getProgramIfo.pic" alt="" width="100%" height="100%">
       </el-dialog>
       </div>
  </div>
@@ -438,15 +445,18 @@
 
 <script>
 import { log } from "util";
-import { http } from "../http/http.js";
+import { http} from "../http/http.js";
 import { getsixstring } from "../api/randomstr";
 import agrement from "../components/agrement";
+import timeformate from "../api/timeFormat"
 export default {
   name: "appointment",
   components: { agrement },
   data() {
     return {
       // active: 0,
+      fullscreenLoading:false,//加载动画
+      baseUrl:'https://bi.psvideo.cn/',//进入加载图片基地址
       active1: "1",
       checkedAgreement: false,
       checked: false,
@@ -455,11 +465,11 @@ export default {
         {
           checked: false,
           value: "09:00-09:30",
-          type: "info",
+          type: "success",
           price: 0.01
         },
         {
-          checked: false,
+          checked: true,
           value: "09:30-10:00",
           type: "info",
           price: 0.01
@@ -467,25 +477,25 @@ export default {
         {
           checked: false,
           value: "10:00-10:30",
-          type: "info",
+          type: "success",
           price: 0.01
         },
         {
           checked: false,
           value: "10:30-11:00",
-          type: "info",
+          type: "success",
           price: 0.01
         },
         {
-          checked: false,
+          checked: true,
           value: "11:00-11:30",
-          type: "info",
+          type: "success",
           price: 0.01
         },
         {
           checked: false,
           value: "11:30-12:00",
-          type: "info",
+          type: "success",
           price: 0.01
         }
       ],
@@ -493,37 +503,37 @@ export default {
         {
           checked: false,
           value: "14:00-14:30",
-          type: "info",
+          type: "success",
           price: 0.01
         },
         {
           checked: false,
           value: "14:30-15:00",
-          type: "info",
+          type: "success",
           price: 0.01
         },
         {
           checked: false,
           value: "15:00-15:30",
-          type: "info",
+          type: "success",
           price: 0.01
         },
         {
           checked: false,
           value: "15:30-16:00",
-          type: "info",
+          type: "success",
           price: 0.01
         },
         {
           checked: false,
           value: "16:00-16:30",
-          type: "info",
+          type: "success",
           price: 0.01
         },
         {
           checked: false,
           value: "16:30-14:00",
-          type: "info",
+          type: "success",
           price: 0.01
         }
       ],
@@ -531,37 +541,37 @@ export default {
         {
           checked: false,
           value: "18:00-18:30",
-          type: "info",
+          type: "success",
           price: 0.01
         },
         {
           checked: false,
           value: "18:30-19:00",
-          type: "info",
+          type: "success",
           price: 0.01
         },
         {
           checked: false,
           value: "19:00-19:30",
-          type: "info",
+          type: "success",
           price: 0.01
         },
         {
           checked: false,
           value: "19:30-20:00",
-          type: "info",
+          type: "success",
           price: 0.01
         },
         {
           checked: false,
           value: "21:00-21:30",
-          type: "info",
+          type: "success",
           price: 0.01
         },
         {
           checked: false,
           value: "21:30-22:00",
-          type: "info",
+          type: "success",
           price: 0.01
         }
       ],
@@ -572,8 +582,9 @@ export default {
       queryExaTable: false,
       querytable: false,//选择查询的显示隐藏
       accurateInputValue: "",
-      activeNames: ["1", "2", "3"],
-      QueryRuesult: [],
+      activeArr:['4'],
+      activeNames: ["1", "2", "3"],//预约回执处展开的行
+      QueryRuesult: [],//人名查找处表格数据的储存
       choeseprovince: "",
       choesecities: "",
       choeseArea: "",
@@ -592,6 +603,8 @@ export default {
       saveNameQueryData:null,//存储点击人名选中后的个人信息
       savePersonData:null,//储存条件筛选后的个人信息
       getProgramIfo:{},//获取项目的详细信息
+      ifSearch:false,//保存是否已经查询的字段
+      shareData:{},//保存微信分享的数据
       beforehandTable: [
         {
           name: "小明明",
@@ -617,12 +630,17 @@ export default {
           passworld: "15fsf5163515ad"
         }
       ],
+      uid:'',//用户ID
+      localUrl:window.location.href,//获取微信接口用到的本地url
       orderTimeArr: [],
+      wechatData:{},//微信用户信息
+      isWeixin:false,//判断是否在微信浏览器
+      obtainCode:'',//存储微信返回的code
       QRcode: false, //二维码抽屉
-      huizi: true, //回执处的禁止选择
-      yudingdan: true, //预订单禁止选择
-      timechoice: true, //时间选择禁止选择
-      orderForbid:true,//预约处禁止选择
+      huizi: false, //回执处的禁止选择
+      yudingdan: false, //预订单禁止选择
+      timechoice: false, //时间选择禁止选择
+      orderForbid:false,//预约处禁止选择
       btndisabled_one: true, //下一步按钮禁用状态
       btndisabled_two: true, //下一步按钮禁用状态
       btndisabled_three: true, //下一步按钮禁用状态
@@ -648,36 +666,68 @@ export default {
       this.active1 = topNumber - 1 + "";
       document.documentElement.scrollTop = 0;
     },
-    //输入框验证码的核实
+    //输入手机号码和验证码完成后向后台发送数据请求返回
     checkPhone() {
          if(this.inputcheckNumber.length!=4){
           this.$message({
           showClose: true,
-          message: "验证码格式错误!",
+          message: "验证码为空或格式错误!",
           duration: 1000
         });
-       }else if(this.inputcheckNumber.length==4 && this.checkedAgreement){
+       }else if(this.inputcheckNumber.length==4 && this.checkedAgreement){        
          this.btndisabled_two=false;
          this.timechoice=false;
-         this.active1='3'
+        //  this.active1='3';
+          this.sendPhoneAndIfo();//登陆验证
        }
     },
+      sendPhoneAndIfo(){ //手机验证码获取后登陆参数
+     let iuid= this.$route.query.iuid || '';
+     let timeshare_id=this.$route.query.timeshare_id || '';
+      let params = {
+        iuid:iuid,
+        timeshare_id:timeshare_id,
+        mobile:this.inputphoneNumber,
+        mobile_code:this.inputcheckNumber,
+        openid:this.wechatData.openid || ''
+       }
+       http.loginIfo(params).then(res=>{
+         console.log(res);
+         if(res.data.code==200) {
+              this.$message({
+          showClose: true,
+          message: "预约注册成功!",
+          duration: 1000,
+          type:"success"
+        });
+        console.log(res.data.data.token);
+        let cookies = res.data.data.token;
+         this.uid = res.data.data.uid;
+        this.setCookie('cookies',cookies,1);//设置cookies 有效时间为1天
+        window.localStorage.setItem('uid', JSON.stringify(this.uid))
+         }else {
+       this.$message({
+          showClose: true,
+          message: "验证码错误!",
+          duration: 1000,     
+        });  
+         }
+       })
+      console.log(iuid,timeshare_id);
+      
+      },
      //预约处验证码的发送
      getCode(){
             if(!this.statusCode){
-           alert('发送验证码方法')
-           //预约处手机号码的验证
+            this.sendPhoneCode()//发送验证码
          }
         	var vm = this;
-					if(vm.statusCode) return;
-						
-					vm.statusCode = true;
-					
+					if(vm.statusCode) return;					
+					vm.statusCode = true;				
 					var time = setInterval(() => {
 					  var residueTime = vm.residueTime;
 					  residueTime--;
 					  vm.residueTime = residueTime;
-				
 					  if (residueTime == 0) {
 						clearInterval(time);
 						vm.residueTime = 30
@@ -685,9 +735,28 @@ export default {
 					  }
 					}, 1000);
      },
-     //预约处手机号码的验证
-     checkPhoneRight(){
-
+     //预约处手机号码的发送方法
+     sendPhoneCode(){
+       let number = this.inputphoneNumber
+      //  http.getCPhoneode(number).then(res=>{
+       http.getCPhoneode(number).then(res=>{
+          console.log(res);
+          if(res.data.code==200){
+           this.$message({
+          showClose: true,
+          type:'success',
+          message: "验证码已发送",
+          duration: 2500
+           });
+          }else {
+             this.$message({
+              message: "两分钟内请勿重复发送!",
+              type: "warning",
+              duration: 2500,
+              showClose: true
+             });
+          }
+        })
      },
     cliscksure() {
       this.dialogVisible = true;
@@ -695,7 +764,7 @@ export default {
     timechoese(value, i) {
       this.changrColor(value);
       this.changeRules(i, this.switchioes);
-      this.checkAllChoice(this.switchioes);
+      // this.checkAllChoice(this.switchioes);
     },
     timechoeseAfernoon(value, i) {
       this.changrColor(value);
@@ -707,21 +776,24 @@ export default {
     },
     //时间选中状态的改变的规则
     changeRules(i, timegrop) {
-      let storearr = [];
+      // let storearr = [];
       let choeseindex = timegrop.findIndex((value, index, arr) => {
         return value.type == "primary";
       });
       if (choeseindex == -1) {
-        timegrop[i].type = "info";
+        timegrop[i].type = "success";
       } else {
         //  console.log("选中的第一个下标为----"+choeseindex,'第多次选中的下标为---'+i,'第一个有选中的下标为---'+unchoeseindex,this.switchioes.length);
-        for (let k = 0; k < timegrop.length; k++) {
-          if (k != choeseindex) {
-            timegrop[k].type = "info";
+        for (let k = 0; k < timegrop.length; k++) { //重置按钮
+          if (k != choeseindex && timegrop[k].checked==true) {
+            timegrop[k].type = "success";
           }
         }
-        for (let j = choeseindex; j <= i; j++) {
-          timegrop[j].type = "primary";
+        for (let j = choeseindex; j <= i; j++) { //将第一次选择的到第二次选择的之间的遍历
+          if(timegrop[j].checked!=true){
+              timegrop[j].type = "primary";
+          }
+          
         }
       }
       this.calcPrice();
@@ -732,17 +804,17 @@ export default {
       let priceArr = [];
       let priceAll = 0;
       this.switchioes.forEach(item => {
-        if (item.type == "primary") {
+        if (item.type == "primary" && item.checked==false) {
           priceArr.push(item);
         }
       });
       this.switchioesTwo.forEach(item => {
-        if (item.type == "primary") {
+        if (item.type == "primary" && item.checked==false) {
           priceArr.push(item);
         }
       });
       this.switchioesThree.forEach(item => {
-        if (item.type == "primary") {
+        if (item.type == "primary" && item.checked==false) {
           priceArr.push(item);
         }
       });
@@ -751,7 +823,8 @@ export default {
       });
       //将选中的信息赋值给data中的数组
       this.orderTimeArr = priceArr;
-      this.beforehandTable[0].time = "未选中";
+      
+      // this.beforehandTable[0].time = "未选中";
       //选中时间后的价格的计算
       this.totalprice = priceAll / 100;
       this.beforehandTable[0].price = this.totalprice;
@@ -766,7 +839,7 @@ export default {
     },
     //关联全选按钮
     checkAllChoice(timegrop) {
-      if (timegrop[0].type == "info" || timegrop[5].type == "info") {
+      if (timegrop[0].type == "success" || timegrop[5].type == "success") {
         this.checked = false;
       } else {
         this.checked = true;
@@ -774,10 +847,12 @@ export default {
     },
     //改变的选中颜色
     changrColor(value) {
-      if (value.type == "info") {
+      
+      if (value.type == "success") {
         value.type = "primary";
-      } else {
-        value.type = "info";
+        
+      } else if(value.type == "primary"){
+        value.type = "success";
       }
     },
     //人名查询选择查找
@@ -798,7 +873,7 @@ export default {
           ask_word: "name",
           ask_content: this.accurateInputValue
         };
-        http.findName(param).then(res => {
+        http.findName(param).then(res => {//人名查找请求
           console.log(res);
           console.log(res.data.data[0].infos[0]);
 
@@ -960,25 +1035,23 @@ export default {
     },
     //点击发送或更换验证码
     changeCheckCode() {
-      console.log("==========");
-                 if (this.inputphoneNumber == "") {
-             this.$message({
+               let regExp = /^(\+?0?86\-?)?1[345789]\d{9}$/;  
+             if (this.inputphoneNumber == "") {
+          this.$message({
                showClose: true,
                message: "手机号码不能为空!",
                duration: 1000
              });
-            } else if(this.inputphoneNumber.length==11){
-              this.getCode()
+         } else if(!regExp.test(this.inputphoneNumber)){
+                  
+        this.$message({
+          showClose: true,
+          message: "请输入正确的手机号码！",
+          type: "error",
+          duration: 1000
+        });         
            }else{
-                 let regExp = /^(\+?0?86\-?)?1[345789]\d{9}$/;           
-             if (!regExp.test(this.inputphoneNumber)) {
-               this.$message({
-                 showClose: true,
-                 message: "请输入正确的手机号码！",
-                 type: "error",
-                 duration: 1000
-               });       
-             }
+              this.getCode() //倒计时方法           
            }
      
     },
@@ -990,7 +1063,7 @@ export default {
         });
       } else {
         this.switchioes.forEach(item => {
-          item.type = "info";
+          item.type = "success";
         });
       }
       this.calcPrice();
@@ -1002,7 +1075,7 @@ export default {
       
       if(this.savePersonData==null){
          this.$message({
-              message: "请确认查询信息完整",
+              message: "请点击表格中名字确认选择",
               type: "warning",
               duration: 1000
             });
@@ -1016,11 +1089,21 @@ export default {
     },
     handleChangeName(val){//人名查找后点击选中表格中的数据
       console.log(val);
-      this.saveNameQueryData=val 
+      this.saveNameQueryData=val;
+      if(val!=null){
+       this.$message({
+         message: "选择成功!",
+         type: "success",
+         duration: 2000
+       });
+      this.beforehandTable[0]=val  
+      }
+   
     },
     handleCurrentChange(val){ //条件筛选后点击选中表格中的数据
       console.log(val);
-      this.savePersonData=val
+      this.savePersonData=val;
+      this.beforehandTable[0]=val
     },
     PersonIfoName(){ //人名查找信息后点击完成按钮
     //  let keyItemsArr = Object.keys(this.saveNameQueryData)
@@ -1051,6 +1134,11 @@ export default {
     wechatPay(){//微信支付
       this.btndisabled_four=false;
       this.huizi=false;  
+      this.fullscreenLoading=true
+      var vvm =this
+      setTimeout(() => {
+        vvm.fullscreenLoading=false
+      }, 5000);
     },
     ImgClosed(){ //图片关闭倒计时的方法
       	var vm = this;	
@@ -1066,8 +1154,140 @@ export default {
 					  }
 					}, 1000);
     },
-    //储存当前时间的localstorage
+    // 设置cookie方法
+  setCookie(name, value, seconds) {
+     seconds = seconds || 0;   //seconds有值就直接赋值，没有为0，这个根php不一样。
+      var expires = "";
+      if (seconds != 0 ) {      //设置cookie生存时间
+     var date = new Date();
+     date.setTime(date.getTime()+(seconds*1000*60*60*24));//天为单位
+     expires = "; expires="+date.toGMTString();
+     }
+     document.cookie = name+"="+escape(value)+expires+"; path=/";   //转码并赋值
+    },
+    // 清除cookie
+    clearCookie(name) {
+    setCookie(name, "", -1);
+    },
+    // 取得cookie
+    getCookie(name) {
+  var nameEQ = name + '='
+  var ca = document.cookie.split(';') // 把cookie分割成组
+  for (var i = 0; i < ca.length; i++) {
+    var c = ca[i] // 取得字符串
+    while (c.charAt(0) == ' ') { // 判断一下字符串有没有前导空格
+      c = c.substring(1, c.length) // 有的话，从第二位开始取
+    }
+    if (c.indexOf(nameEQ) == 0) { // 如果含有我们要的name
+      return unescape(c.substring(nameEQ.length, c.length)) // 解码并截取我们要值
+    }
+  }
+  return false
+    },
+    //获取微信授权的方法
+    getwxReq(){
+      //this.isWeixin && !this.getCookie("token") && !this.obtainCode
+      if( this.isWeixin && !this.obtainCode ){ //首次登陆没有token的情况下
+            http.getwxIfo(this.localUrl).then(res=>{
+        console.log(res);
+        window.location.href= res.data.data
+      })
+      }
+    },
+      // 获取微信授权的code
+   getQueryString(name) {  
+       var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");  
+       var r = window.location.search.substr(1).match(reg);  
+       if (r != null) return unescape(r[2]);  
+       return null;  
+   },
+    //微信分享
+    wxshareFn(){
+      if(this.isWeixin){
+          http.weixinshare().then(res=>{
+           console.log(res);
+            if(res.data.code==200) {
+                        this.shareData = res.data.data;
+                        let config = this.shareData.config;
+                        // console.log(this.shareData);                      
+                        wx.config({
+                            // debug: true,
+                            appId: config.appId,
+                            nonceStr: config.nonceStr,
+                            timestamp: config.timestamp,
+                            signature: config.signature,
+                            jsApiList: [
+                                "onMenuShareTimeline",
+                                "onMenuShareAppMessage",
+                                "onMenuShareQQ",
+                                "onMenuShareWeibo",
+                                "onMenuShareQZone"
+                            ]
+                        });
+                        let url = window.location.href;
+                        // if(url.indexOf("?") == -1){
+                        //     url += '?iuid=' + this.uid ||'';
+                        // }else {
+                        //     url += '&iuid=' + this.uid  ||'';
+                        // }
+                        wx.ready(() => {
+                          // alert(this.shareData.title)             
+                            wx.onMenuShareTimeline({
+                                title:  this.getProgramIfo.title, // 分享标题
+                                link: url, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
+                                imgUrl:'https://bi.psvideo.cn'+'https://bi.psvideo.cn'+this.getProgramIfo.logo, // 分享图标
+                                success: function () {
+                                    // 用户点击了分享后执行的回调函数
+                                }
+                            });
+
+                            wx.onMenuShareAppMessage({
+                                title:  this.getProgramIfo.title, // 分享标题
+                                desc:  this.getProgramIfo.description, // 分享描述
+                                link:  url, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
+                                imgUrl:   'https://bi.psvideo.cn'+this.getProgramIfo.logo, // 分享图标
+                                type: 'link', // 分享类型,music、video或link，不填默认为link
+                                success: function () {
+                                    // 用户点击了分享后执行的回调函数
+                                }
+                            });
+
+                            wx.onMenuShareQQ({
+                                title:  this.getProgramIfo.title, // 分享标题
+                                desc:   this.getProgramIfo.description, // 分享描述
+                                link: url, // 分享链接
+                                imgUrl:  'https://bi.psvideo.cn'+this.getProgramIfo.logo, // 分享图标
+                                success: function () {
+                                // 用户确认分享后执行的回调
+                                },
+                                cancel: function () {
+                                // 用户取消分享后执行的回调函数
+                                }
+                            });
+
+                            wx.onMenuShareWeibo({
+                                title:  this.getProgramIfo.title, // 分享标题
+                                desc:   this.getProgramIfo.description, // 分享描述
+                                link: url, // 分享链接
+                                imgUrl:  'https://bi.psvideo.cn'+this.getProgramIfo.logo, // 分享图标
+                                success: function () {
+                                    // 用户确认分享后执行的回调函数
+                                },
+                                cancel: function () {
+                                    // 用户取消分享后执行的回调函数
+                                }
+                            });
+                        });
+                    }
+           
+      })
+      }
     
+     
+      
+     
+    },
+
   },
   created() {
     //选择中的省份返回查询
@@ -1084,77 +1304,73 @@ export default {
      http.getProIfo({id:1}).then(res =>{//获取标题封面图片路径等信息
       
        this.getProgramIfo=res.data.data[0].infos[0];
+          document.title = this.getProgramIfo.title;
         console.log( this.getProgramIfo);
-     })
+     });
+     //获取显示预约时间列表
+      http.getTimeArr(1).then(res=>{
+        console.log(res, timeformate(1573522200000,'h:m'));
+       let tiemArrs=res.data.data[0].infos;
+      //  console.log(tiemArrs);
+      //处理按钮是否可以选择
+      tiemArrs.forEach(item=>{
+        item.storage-item.sold >0?item.checked=false : item.checked=true;
+        // item.storage-item.sold >0?item.type="success" : item.type="info";
+      })
+       tiemArrs.forEach(item=>{
+         item.checked?item.type="info":item.type="success"
+       })
+      //处理显示时间的格式问题 添加按钮的初始颜色
+      tiemArrs.forEach(item=>{
+        let continuedTime= timeformate((parseInt(item.timepoint)+parseInt(item.timehold))*1000,'h:m')
+        let finalTime= timeformate(item.timepoint*1000,'h:m-')+continuedTime;
+        item.value=finalTime
+      })
+      //判断上午下午或是晚上
+       this.switchioes=[];
+         this.switchioesTwo=[]; this.switchioesThree=[];
+       tiemArrs.forEach(item=>{
+        let tiemH= timeformate(item.timepoint*1000,'h')
+         if(0<tiemH && tiemH<13) {
+           this.switchioes.push(item)
+         }else if(13<tiemH && tiemH<18) {
+           this.switchioesTwo.push(item)
+         }else if(18<=tiemH && tiemH<=24){
+          this.switchioesThree.push(item) 
+         }
+         
+        //  if()
+       })
+       console.log(tiemArrs);
+       
+      })
     
     // 生成6为随机码
     // window.console.log(getsixstring());
 
-    //选择中的市返回查询
-    //  var choisecity={
-    //    ask:2,
-    //    ask_word:"province",
-    //    ask_content:"广东省"
-    //  }
-    //      http.findcitys(choisecity).then(res=>{
-    //     console.log(res);
-
-    //   })
-
-    //按条件查找区域的返回
-    //  var choioseareas={
-    //        ask:2,
-    //         ask_word:"city",
-    //         ask_content:"深圳市",
-    //         province:"广东省"
-    //  }
-    //   http.findareas(choioseareas).then(res=>{
-    //     console.log(res);
-
-    //   })
-
-    //按条件查找学校返回值
-    //  var schoolFind={
-    //    ask:2,
-    //    ask_word:"district",
-    //    ask_content:"龙岗区",
-    //    city:'深圳市',
-    //     province:"广东省"
-    //  }
-    //  http.findSchool(schoolFind).then(res=>{
-    //    console.log(res);
-
-    //  })
-    //按条件查找班级返回值
-    // var classFind={
-    //       ask:2,
-    //      ask_word:"school",
-    //      ask_content:"某某实验中学",
-    //      city:'深圳市',
-    //       province:"广东省" ,
-    //      district:"龙岗区"
-    // }
-    // http.findClass(classFind).then(res=>{
-    //   console.log(res);
-
-    // })
-
-    //按条件查找人名返回
-    // var personFind = {
-    //        ask:2,
-    //        ask_word:"class",
-    //        ask_content:"初三（1）班",
-    //        city:"深圳市",
-    //        province:"广东省" ,
-    //        district:"龙岗区",
-    //        school:"实验中心中学",
-    // }
-    // http.findPerson(personFind).then(res=>{
-    //   console.log(res);
-    // })
   },
   mounted(){
-    this.ImgClosed();//进入页面前图片关闭的方法
+        // 判断是否是微信浏览器
+     let ua = navigator.userAgent.toLowerCase();
+     this.isWeixin = ua.indexOf('micromessenger') != -1;
+
+     this.ImgClosed();//进入页面前图片关闭的方法
+
+     this.obtainCode = this.getQueryString('code');
+     console.log(this.obtainCode);
+     this.setCookie('code', this.obtainCode, 7);//7天有效
+     
+    this.getwxReq();//获取微信接口的方法
+
+      if(this.isWeixin && this.obtainCode){//获取微信用户信息的回调
+        http.getwxUserIfo(this.obtainCode).then(res=>{
+          this.wechatData = res.data.data;
+          this.setCookie('openid', this.wechatData.openid, 7); //openId 七天有效时间
+        })
+      }
+     
+     this.wxshareFn()//微信分享
+
   },
   watch: {
     // queryExaTable: {
@@ -1178,6 +1394,13 @@ export default {
 <style >
 .title {
   font-size: 15px;
+}
+
+.el-table--striped .el-table__body tr.el-table__row--striped.current-row td,
+.el-table__body tr.current-row > td {
+  background-color: rgb(173, 219, 198);
+  color: #e91390;
+  font-weight: 900;
 }
 .container{
   position: relative;
@@ -1203,13 +1426,21 @@ export default {
     top: 22px;
     right: 34px;
 }
+.navbox .aboutDescription {
+      background-size: cover;
+    background-image: url(https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1572517853412&di=c4137845626e08aa5ff8271f51c910ad&imgtype=0&src=http%3A%2F%2Fimg1.template.cache.wps.cn%2Fwps%2Fcdnwps%2Fupload%2Fofficial%2Ftemplate%2F2012-12-13%2F50c99e56adee2.png);
+    padding: 10px;
+}
+.navbox .aboutDescription h3 {
+  color:pink;
+}
 .navbox .aboutDescription .content {
-    color: #6b9eff;
+    color: #fff;
     font-size: 16px;
     line-height: 25px;
     text-indent: 30px;
     margin-top: 10px;
-
+    padding: 10px;
 }
 .queryChoose {
   line-height: 50px;
@@ -1229,7 +1460,9 @@ export default {
 .accurateQueryBox .tableContent {
   margin-top: 10px;
 }
-
+.accurateQueryBox .close-btn {
+  margin-top: 20px;
+}
 .queryByCondition {
   padding-left: 20px;
   /* height: 600px; */
@@ -1237,8 +1470,9 @@ export default {
  .choiceQuery-result {
   margin-top: 20px;
 }
-.queryByCondition .close-btn {
+ .close-btn {
   margin-top: 30px;
+  margin-left: 40%;
 }
 .queryByCondition .chioeseQuery {
   margin-top: 10px;
@@ -1335,6 +1569,17 @@ export default {
 .beforehandOrder .payWays {
   margin: 0 0 10px 10px;
 }
+.beforehandOrder .timechice-show {
+  margin-bottom: 20px;
+}
+.beforehandOrder .timechice-show .orderTag {
+    display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+}
+.beforehandOrder .timechice-show .orderTag span {
+    margin-bottom: 10px;
+}
 /* 订单回执处时间排列 */
 .orderSuccess {
   margin-bottom: 10px;
@@ -1390,5 +1635,11 @@ export default {
 .row-bg {
   padding: 10px 0;
   background-color: #f9fafc;
+}
+/* 禁用按钮的样式 */
+.el-button--success.is-disabled {
+    color: #FFF;
+    background-color: #CCC;
+    border-color: #CCC;
 }
 </style>
