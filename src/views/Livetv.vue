@@ -12,7 +12,7 @@
     </el-row> -->
     <div class="navbox">
       <el-tabs :tab-position="tabPosition" style="height:600px;" v-model="active1">
-        <el-tab-pane label="查询" name="1">
+        <el-tab-pane label="预约学生" name="1">
           <div class="aboutDescription">
             <h3>特色介绍</h3>
             <div class="content">{{getProgramIfo.description}}</div>
@@ -26,7 +26,7 @@
             <!-- <el-button type="danger" @click="toSearch" size="small">详细查询</el-button> -->
           </div>
           <!-- 1.输入姓名查找 -->
-          <el-drawer title="精确查询" :visible.sync="queryExaTable" direction="rtl" size="100%">
+          <el-drawer title="精确查询" :visible.sync="queryExaTable" direction="rtl" size="100%" :show-close="showClose">
             <div class="accurateQueryBox">
               <div class="inputQueryBOx">
                 <el-input
@@ -50,6 +50,7 @@
                 </el-table>
               </div>
                <div class="close-btn">
+                 <el-button size="small" type="danger" @click="PersonIfoNameToback">返回</el-button>
                   <el-button size="small" type="success" @click="PersonIfoName">完成</el-button>
                 </div>
                
@@ -57,7 +58,7 @@
           </el-drawer>
 
           <!--2. 按条件查找 -->
-          <el-drawer title="选择查询" :visible.sync="querytable" direction="rtl" size="100%">
+          <el-drawer title="选择查询" :visible.sync="querytable" direction="rtl" size="100%" :show-close="showClose">
             <div class="queryByCondition">
               <p class="atips">请从上而下选择查询：</p>
               <div class="chioeseQuery">
@@ -186,16 +187,17 @@
                  </el-table>
                </div>
                 <div class="close-btn">
+                <el-button size="small" type="danger" @click="PersonIfoToback">返回</el-button>
                 <el-button size="small" type="success" @click="PersonIfo">完成</el-button>
               </div>
           </el-drawer>
-          <div class="nextStep">
+          <!-- <div class="nextStep">
             <el-button size="small" @click="next" :disabled="btndisabled_one">下一步</el-button>
-          </div>
+          </div> -->
         </el-tab-pane>
 
         <!-- 预约table栏 -->
-        <el-tab-pane label="预约" name="2" :disabled="orderForbid" lazy>
+        <el-tab-pane label="家长验证" name="2" :disabled="orderForbid" lazy>
           <div class="order-phone">
             <div class="phoneNumber">
               <!-- input手机号码输入框 -->
@@ -224,16 +226,15 @@
             <!-- <el-button type="text" @click="dialogVisible = true" id="caluse">相关条款</el-button> -->
             <div class="provision">
               <!-- 单选框 -->
-              <el-checkbox v-model="checkedAgreement" @click.native="cliscksure">同意相关 条款</el-checkbox>
-              <!-- 确认按钮 -->
-              <div class="agreeButton">
-                <el-button :type="buttonType" size="small" @click="checkPhone">确认</el-button>
-              </div>
+              <el-checkbox v-model="checkedAgreement" @click.native="cliscksure">我已阅读并同意《预约直播服务内容》</el-checkbox>
+            
             </div>
             <div class="ordersteps">
               <el-divider></el-divider>
-              <el-button size="small" @click="top">上一步</el-button>
-              <el-button size="small" @click="next" :disabled="btndisabled_two">下一步</el-button>
+              <el-button size="small" @click="top">返 回</el-button>
+                <div class="agreeButton">
+                <el-button :type="buttonType" size="small" @click="checkPhone">确认</el-button>
+              </div>
             </div>
           </div>
         </el-tab-pane>
@@ -316,8 +317,9 @@
                 <span class="price">{{totalprice}}</span> 元
               </el-divider>
             </div>
-            <el-button size="small" @click="top">上一步</el-button>
-            <el-button size="small" @click="next" :disabled="btndisabled_three">下一步</el-button>
+           
+            <el-button size="small" @click="top">返回</el-button>
+            <el-button type="warning" size="small" @click="orderSubmit">确认预约时间</el-button>
           </div>
         </el-tab-pane>
 
@@ -333,7 +335,7 @@
                 <el-table-column prop="school" label="学校"></el-table-column>
                 <el-table-column prop="sex" label="性别">                                        
                 </el-table-column>
-                <el-table-column prop="price" label="总费用(单位/元)"></el-table-column>
+               
               </el-table>
             </div>
             <div class="timechice-show">
@@ -349,6 +351,7 @@
                </div>
               </el-collapse-item>
                </el-collapse>
+                 <el-divider content-position="center">价格: <span class="price_bef">￥</span><span class="price_to">{{totalprice}}</span> </el-divider>
             </div>
             <div class="payWays">
               请选择支付方式：
@@ -361,8 +364,8 @@
               <el-button plain size="small" icon="el-icon-more">其他</el-button> -->
             </div>
             <el-divider></el-divider>
-            <el-button size="small" @click="top">上一步</el-button>
-            <el-button size="small" @click="next" :disabled="btndisabled_four">下一步</el-button>
+            <el-button size="small" @click="top">返回</el-button>
+     
           </div>
         </el-tab-pane>
         <!-- 六、订单回执 -->
@@ -406,7 +409,7 @@
               </el-collapse-item>
             </el-collapse>
           </div>
-          <el-button size="small" @click="top">上一步</el-button>
+          <el-button size="small" @click="top">返回</el-button>
         </el-tab-pane>
       </el-tabs>
       <!-- 弹出条框内容 -->
@@ -461,6 +464,7 @@ export default {
       checkedAgreement: false,
       checked: false,
       loading: false,
+      showClose:false,
       switchioes: [
         {
           checked: false,
@@ -605,6 +609,7 @@ export default {
       getProgramIfo:{},//获取项目的详细信息
       ifSearch:false,//保存是否已经查询的字段
       shareData:{},//保存微信分享的数据
+      signData:{},//创建订单传回的数据
       beforehandTable: [
         {
           name: "小明明",
@@ -631,20 +636,20 @@ export default {
         }
       ],
       uid:'',//用户ID
+      goodsidArr:[],//储存预约时间段的ID数组
       localUrl:window.location.href,//获取微信接口用到的本地url
-      orderTimeArr: [],
+      orderTimeArr: [],//预约时间数组
       wechatData:{},//微信用户信息
       isWeixin:false,//判断是否在微信浏览器
       obtainCode:'',//存储微信返回的code
       QRcode: false, //二维码抽屉
-      huizi: false, //回执处的禁止选择
-      yudingdan: false, //预订单禁止选择
-      timechoice: false, //时间选择禁止选择
-      orderForbid:false,//预约处禁止选择
-      btndisabled_one: true, //下一步按钮禁用状态
+      huizi: true, //回执处的禁止选择
+      yudingdan: true, //预订单禁止选择
+      timechoice: true, //时间选择禁止选择
+      orderForbid:true,//预约处禁止选择
       btndisabled_two: true, //下一步按钮禁用状态
       btndisabled_three: true, //下一步按钮禁用状态
-      btndisabled_four: true, //下一步按钮禁用状态
+      // btndisabled_four: true, //下一步按钮禁用状态
       statusCode: false,//控制验证码是否显示
       residueTime:30,//多少秒后重新获取
       firstSeeImg:true,//控制进入页面的遮罩层图片是否显示
@@ -677,7 +682,7 @@ export default {
        }else if(this.inputcheckNumber.length==4 && this.checkedAgreement){        
          this.btndisabled_two=false;
          this.timechoice=false;
-        //  this.active1='3';
+         this.active1='3';
           this.sendPhoneAndIfo();//登陆验证
        }
     },
@@ -704,7 +709,8 @@ export default {
         let cookies = res.data.data.token;
          this.uid = res.data.data.uid;
         this.setCookie('cookies',cookies,1);//设置cookies 有效时间为1天
-        window.localStorage.setItem('uid', JSON.stringify(this.uid))
+        window.localStorage.setItem('uid', JSON.stringify(this.uid));
+        // this.active1="4";
          }else {
        this.$message({
           showClose: true,
@@ -739,7 +745,13 @@ export default {
      sendPhoneCode(){
        let number = this.inputphoneNumber
       //  http.getCPhoneode(number).then(res=>{
-       http.getCPhoneode(number).then(res=>{
+       this.$axios({
+         method:'post',
+         url:'https://bi.psvideo.cn/api/send_code',
+         data:{
+           'mobile':number
+         }
+       }).then(res=>{
           console.log(res);
           if(res.data.code==200){
            this.$message({
@@ -758,7 +770,7 @@ export default {
           }
         })
      },
-    cliscksure() {
+    cliscksure() { //点击同意相关条款
       this.dialogVisible = true;
     },
     timechoese(value, i) {
@@ -803,39 +815,40 @@ export default {
       //总价的计算
       let priceArr = [];
       let priceAll = 0;
+      let goodsidArr=[];
       this.switchioes.forEach(item => {
         if (item.type == "primary" && item.checked==false) {
           priceArr.push(item);
+          goodsidArr.push(item.id);
         }
       });
       this.switchioesTwo.forEach(item => {
         if (item.type == "primary" && item.checked==false) {
           priceArr.push(item);
+           goodsidArr.push(item.id);
         }
       });
       this.switchioesThree.forEach(item => {
         if (item.type == "primary" && item.checked==false) {
           priceArr.push(item);
+           goodsidArr.push(item.id);
         }
       });
       priceArr.forEach(item => {
         priceAll += item.price * 100;
       });
+      this.goodsidArr = goodsidArr;
+      console.log(goodsidArr);
+      
+      
       //将选中的信息赋值给data中的数组
       this.orderTimeArr = priceArr;
       
       // this.beforehandTable[0].time = "未选中";
       //选中时间后的价格的计算
-      this.totalprice = priceAll / 100;
+      this.totalprice = (priceAll / 100).toFixed(2);
       this.beforehandTable[0].price = this.totalprice;
-      //点亮下一步按钮和预订单
-      if(this.totalprice!=0){
-        this.yudingdan=false;
-        this.btndisabled_three=false;
-      }else{
-          this.yudingdan=true;
-        this.btndisabled_three=true;
-      }
+   
     },
     //关联全选按钮
     checkAllChoice(timegrop) {
@@ -1081,11 +1094,15 @@ export default {
             });
            
       }else{
-      this.btndisabled_one=false;
            this.orderForbid=false; 
-             this.querytable=false
+           this.querytable=false;
+           this.active1="2"
       }
       
+    },
+    PersonIfoToback(){
+      this.querytable=false;
+     
     },
     handleChangeName(val){//人名查找后点击选中表格中的数据
       console.log(val);
@@ -1109,9 +1126,9 @@ export default {
     //  let keyItemsArr = Object.keys(this.saveNameQueryData)
       // console.log(keyItemsArr);
       if(this.saveNameQueryData!=null){
-      this.btndisabled_one=false;
       this.orderForbid=false; 
-      this.queryExaTable=false
+      this.queryExaTable=false;
+      this.active1="2";
       }else {
       this.$message({
        message: "请点击表格确认学生信息",
@@ -1119,6 +1136,11 @@ export default {
       duration: 1000
       })
       }  
+    },
+    PersonIfoNameToback(){
+      this.queryExaTable=false;
+
+
     },
     setAgreement(eve) {//协议栏同意是否
       // console.log(eve);
@@ -1131,8 +1153,105 @@ export default {
         this.buttonType = "";
       }
     }, 
+    orderSubmit(){ //点击时间确认选择按钮向后台发送用户订单数据
+      if(this.goodsidArr.length!=0) {
+        //点亮下一步按钮和预订单
+        this.yudingdan=false;
+        this.btndisabled_three=false;
+        this.active1='4';
+      }else{
+            this.$message({
+             message: "请选择先预约时间哦~",
+             type: "warning",
+             duration: 1000
+            })
+      }
+      
+           
+    },
+    callpay(){
+    if (typeof WeixinJSBridge == "undefined"){
+          if( document.addEventListener ){
+              document.addEventListener('WeixinJSBridgeReady', this.jsApiCall, false);
+          }else if (document.attachEvent){
+              document.attachEvent('WeixinJSBridgeReady', this.jsApiCall); 
+              document.attachEvent('onWeixinJSBridgeReady', this.jsApiCall);
+          }
+      }else{
+          this.jsApiCall();
+      }
+    },
+    jsApiCall(){ //支付请求
+       WeixinJSBridge.invoke(
+            'getBrandWCPayRequest',
+            {
+                'appId': this.signData.appId,
+                "timeStamp": this.signData.timeStamp,
+                "nonceStr": this.signData.nonceStr,
+                "package": this.signData.package,
+                "signType": this.signData.signType,
+                "paySign": this.signData.paySign,
+            },
+        function(res){
+        //  alert("取消才到这支付j断点"+res);
+         WeixinJSBridge.log(res.msg);
+          console.log(res.code+ '\n' +res.desc+ '\n' +res.msg);
+        }
+     );
+    },
     wechatPay(){//微信支付
-      this.btndisabled_four=false;
+
+      let postparm = {
+        goods_id:(this.goodsidArr).toString(),
+        anchor_id: this.beforehandTable[0].anchor_id,
+        mobile:this.inputphoneNumber,
+        openid:this.wechatData.openid,
+        amount:this.totalprice,
+        pay_way:"WXBROWSER",
+        money:this.totalprice  
+      }
+       if(this.isWeixin){ //判断是否在微信浏览器
+       http.getGoodsOrder(postparm).then(res=>{ //在微信浏览器
+        console.log(res);
+        if(res.data.code==200) { //订单创建成功
+           this.signData = JSON.parse(res.data.data); 
+           console.log(this.signData);    
+             //发起支付
+            this.callpay();
+        }else { //订单创建失败
+          this.$message({
+              message: "订单创建失败",
+               type: "warning",
+               duration: 2000,
+          })
+        }
+      })
+     }else { //不在微信浏览器
+          let postparm1 ={
+            goods_id:(this.goodsidArr).toString(),
+            anchor_id:this.beforehandTable[0].anchor_id,
+            mobile:this.inputphoneNumber,
+            openid:'',
+            amount:this.totalprice,
+            pay_way:'H5WX',
+            money:this.totalprice*1,
+          }
+          http.getGoodsOrder(postparm1).then(res=>{
+             console.log(res);
+            if(res.data.code==200){
+              window.location.href = "https://bi.psvideo.cn/timeshare/manage"
+            }else {
+              this.$message({
+               message: "订单创建失败",
+               type: "warning",
+               duration: 2000,
+              })
+            }
+          })
+     }
+      console.log(postparm);
+
+      // this.btndisabled_four=false;
       this.huizi=false;  
       this.fullscreenLoading=true
       var vvm =this
@@ -1225,10 +1344,8 @@ export default {
                             ]
                         });
                         let url = window.location.href;
-                        // if(url.indexOf("?") == -1){
-                        //     url += '?iuid=' + this.uid ||'';
-                        // }else {
-                        //     url += '&iuid=' + this.uid  ||'';
+                        // if(url.indexOf("?iuid=''") != -1){
+                        //    url=url.replace(/iuid=''/)
                         // }
                         wx.ready(() => {
                           // alert(this.shareData.title)             
@@ -1339,9 +1456,8 @@ export default {
           this.switchioesThree.push(item) 
          }
          
-        //  if()
        })
-       console.log(tiemArrs);
+      //  console.log(tiemArrs);
        
       })
     
@@ -1364,13 +1480,16 @@ export default {
 
       if(this.isWeixin && this.obtainCode){//获取微信用户信息的回调
         http.getwxUserIfo(this.obtainCode).then(res=>{
+          console.log(res);
+          console.log('上面是打印OpenID');
+          
           this.wechatData = res.data.data;
           this.setCookie('openid', this.wechatData.openid, 7); //openId 七天有效时间
         })
       }
      
      this.wxshareFn()//微信分享
-
+     this.uid=JSON.parse(window.localStorage.getItem("uid")) ||'' ; //获取分享的uid
   },
   watch: {
     // queryExaTable: {
@@ -1472,7 +1591,7 @@ export default {
 }
  .close-btn {
   margin-top: 30px;
-  margin-left: 40%;
+  margin-left: 30%;
 }
 .queryByCondition .chioeseQuery {
   margin-top: 10px;
@@ -1513,6 +1632,7 @@ export default {
 .timeChoese .clearfix {
   position: relative;
 }
+
 .box-card .timeChoeseMoring {
   float: left;
   margin-left: 150px;
@@ -1579,6 +1699,14 @@ export default {
 }
 .beforehandOrder .timechice-show .orderTag span {
     margin-bottom: 10px;
+}
+.beforehandOrder .timechice-show .price_bef{
+  color: red;
+  font-size: 10px;
+}
+.beforehandOrder .timechice-show .price_to {
+    color: red;
+    font-weight: 900;
 }
 /* 订单回执处时间排列 */
 .orderSuccess {

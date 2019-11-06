@@ -134,6 +134,12 @@ http.findPerson=({
            }
        })
    }
+   //先后端发送订单数据返回订单信息
+   http.getGoodsOrder=({goods_id,anchor_id,mobile,openid,amount,pay_way,money})=>{
+       return http.post('/timeshare/makeOrder',{
+      goods_id,anchor_id,mobile,openid,amount,pay_way,money     
+       })
+   }
 // request拦截器
 // http.interceptors.request.use(
 //     config => {
