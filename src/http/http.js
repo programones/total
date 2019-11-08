@@ -140,6 +140,22 @@ http.findPerson=({
       goods_id,anchor_id,mobile,openid,amount,pay_way,money     
        })
    }
+   //获取订单列表
+   http.getOrderList=(mobile)=>{
+        return http.get('/timeshare/getOrder',{
+            params:{
+                mobile     
+            }
+        })
+   }
+   //获取订单明细
+   http.getOrderDtile=(id)=>{
+            return http.get('/timeshare/orderDetail',{
+                params:{
+                    id   
+                }
+            })
+   }
 // request拦截器
 // http.interceptors.request.use(
 //     config => {

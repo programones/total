@@ -18,6 +18,13 @@
             <div class="content">{{getProgramIfo.description}}</div>
             </div>
              <el-divider></el-divider>
+                <el-alert
+                v-if="showTips"
+              title="您已选择学生信息"
+              type="success"
+              center
+              show-icon>
+            </el-alert>
           <!-- 点击显示抽屉栏 -->
           <div class="queryChoose">选择查询方式:</div>
           <div class="queryButton">
@@ -201,15 +208,24 @@
           <div class="order-phone">
             <div class="phoneNumber">
               <!-- input手机号码输入框 -->
-              <el-input
+              <!-- <el-input
                 v-model.trim="inputphoneNumber"
                 maxlength="11"
                 placeholder="请输入手机号"
                 style="width:60%"
                 suffix-icon="el-icon-phone"
-              ></el-input>
+              ></el-input> -->
+                 <el-autocomplete
+                  clearable
+                    class="inline-input"
+                    v-model="inputphoneNumber"
+                    :fetch-suggestions="querySearch"
+                    placeholder="请输入手机号码"
+                    @select="handleSelect"
+                    suffix-icon="el-icon-phone"
+                  ></el-autocomplete> <el-button type="text" @click="changePhoneNumber" v-if="changeBtn">更换号码</el-button>
             </div>
-            <div class="check-number">
+            <div class="check-number" v-if="codeShow">
               <el-input
                 v-model="inputcheckNumber"
                 maxlength="4"
@@ -244,7 +260,11 @@
           <div class="timeChoese">
             <!-- 卡片区域 -->
             <!-- （1）上午卡片区域 -->
-
+            <div class="timeChoese-btn">
+              <el-button type="text" @click="upDay" :disabled="upDays">前一天</el-button>
+              <el-button >{{orderTimeDay}}</el-button>
+               <el-button type="text" @click="nextDay" :disabled="nextDays">后一天</el-button>
+              </div>
             <el-card class="box-card">
               <div slot="header" class="clearfix">
                 <span class="cardMoring">预约上午</span>
@@ -340,15 +360,24 @@
             </div>
             <div class="timechice-show">
                <el-collapse v-model="activeArr">
-                <el-collapse-item title="预约的时段" name="4">
-               <div class="orderTag">
+                <el-collapse-item title="预约时段信息" name="4">
+               <!-- <div class="orderTag">
                 <el-tag
                   v-for="item in orderTimeArr"
                  :key="item.value"
                  type="warning"
                  size="mini"          
                >{{item.value}}</el-tag>
-               </div>
+               </div> -->
+
+                  <el-table :data="orderTimeArr" border size="mini">
+                <el-table-column label="预约日期" fixed>
+                  {{orderTimeDay}}
+                </el-table-column>
+                <el-table-column prop="title" label="预约时段"></el-table-column>
+         
+               
+              </el-table>
               </el-collapse-item>
                </el-collapse>
                  <el-divider content-position="center">价格: <span class="price_bef">￥</span><span class="price_to">{{totalprice}}</span> </el-divider>
@@ -369,47 +398,35 @@
           </div>
         </el-tab-pane>
         <!-- 六、订单回执 -->
-        <el-tab-pane label="预约回执" name="5" lazy :disabled="huizi"
+        <el-tab-pane label="订单列表" name="5" lazy :disabled="huizi"
          element-loading-text="回执生成中..."  
         v-loading.fullscreen.lock="fullscreenLoading">
-          <div class="orderSuccess">
-            <!-- <p class="orderTitle">预约回执</p> -->
-            <el-collapse v-model="activeNames">
-              <el-collapse-item title="个人信息" name="1">
-                <el-table :data="orderPersoalIfo" border size="mini">
-                  <el-table-column prop="name" label="姓名" width="60px" fixed></el-table-column>
-                  <el-table-column prop="class" label="班级"></el-table-column>
-                  <el-table-column prop="school" label="学校"></el-table-column>
-                  <el-table-column prop="time" label="预约手机" width="120px">
-                    <el-tag type="success" size="mini">15179175376</el-tag>
+            <div class="order-table">
+                <el-table
+                   
+                  :data="tableDataOrdrList"                  
+                  style="width: 100%">
+                  <el-table-column
+                    property="order_sn"
+                    label="订单号"
+                   >
                   </el-table-column>
-                  <el-table-column prop="orderNum" label="订单号"></el-table-column>
-                </el-table>
-              </el-collapse-item>
-              <el-collapse-item title="时段信息" name="2">
-                <div class="orderTag">
-                  <el-tag
-                    type="warning"
-                    size="mini"
-                    v-for="item in orderTimeArr"
-                    :key="item.value"
-                  >{{item.value}}</el-tag>
-                </div>
-              </el-collapse-item>
-              <el-collapse-item title="二维码及观看密码" name="3">
-                <el-table :data="returnImg" border size="mini">
-                  <el-table-column label="二维码" prop="url">
-                    <div class="thatcode" @click="showDrawer">
-                      <img :src="returnImg[0].url" alt width="130" height="130" />
-                      <p>点击放大</p>
-                    </div>
+                  <el-table-column
+                    property="orderTime"
+                    label="下单时间"
+                   >
                   </el-table-column>
-                  <el-table-column prop="passworld" label="密码"></el-table-column>
+                  <el-table-column
+                    fixed="right"
+                    label="操作"
+                    width="50">
+                <template slot-scope="scope">
+              <el-button @click="orderListId(scope.row)" type="text" size="small">查看</el-button>      
+            </template>
+                  </el-table-column>
                 </el-table>
-              </el-collapse-item>
-            </el-collapse>
-          </div>
-          <el-button size="small" @click="top">返回</el-button>
+            </div>
+          <!-- <el-button size="small" @click="top">返回</el-button> -->
         </el-tab-pane>
       </el-tabs>
       <!-- 弹出条框内容 -->
@@ -427,7 +444,7 @@
     <!-- 二维码抽屉 -->
     <el-drawer title="二维码" :visible.sync="QRcode" direction="rtl" size="100%">
       <div class="drawerImg">
-        <img :src="returnImg[0].url" alt width="250" height="250" />
+        <!-- <div class="qrcode" ref="qrCodeUrl"></div> -->
         <div class="btnClose">
           <el-button @click="showDrawer">关 闭</el-button>
         </div>
@@ -442,7 +459,46 @@
            <p class="countdownTime">还有{{ImgCloseTime}}秒关闭</p>
            <img :src="baseUrl+getProgramIfo.pic" alt="" width="100%" height="100%">
       </el-dialog>
-      </div>
+      </div> 
+      <!-- 点击进入订单详细页面 -->
+       <el-drawer title="订单详细" :visible.sync="orderDetlies" direction="rtl" size="100%" :show-close="showClose">
+        <div class="orderSuccess">
+            <!-- <p class="orderTitle">预约回执</p> -->
+            <el-collapse v-model="activeNames">
+              <el-collapse-item title="学生信息" name="1">
+                <el-table :data="orderPersoalIfo" border size="mini">
+                  <el-table-column prop="name" label="姓名" width="60px" fixed></el-table-column>
+                  <el-table-column prop="sex" label="性别"></el-table-column>
+                  <el-table-column prop="class" label="班级"></el-table-column>
+                  <el-table-column prop="school" label="学校"></el-table-column>             
+                </el-table>
+              </el-collapse-item>
+              <el-collapse-item title="时段信息" name="2">
+                <div class="orderTag">
+                  <el-tag
+                    type="success"
+                    size="mini"
+                    v-for="item in orderPersoalIfo"
+                    :key="item.value"
+                  >{{item.value}}</el-tag>
+                </div>
+              </el-collapse-item>
+              <el-collapse-item title="二维码入口及连接" name="3">
+                <el-table :data="orderPersoalIfo" border size="mini">
+                  <el-table-column >
+                    <div class="thatcode" @click.once="showDrawer">
+                      <!-- <img :src="returnImg[0].url" alt width="130" height="130" /> -->
+                      <div class="qrcode" ref="qrCodeUrl"></div>
+                      <p>点击生成二维码</p>
+                    </div>
+                  </el-table-column>
+                  <el-table-column prop="room_url" label="地址连接"></el-table-column>
+                </el-table>
+              </el-collapse-item>
+            </el-collapse>
+            <el-button type="warning" size="small" @click="OrderToBack">返回</el-button>
+          </div>   
+          </el-drawer>
  </div>
 </template>
 
@@ -451,7 +507,8 @@ import { log } from "util";
 import { http} from "../http/http.js";
 import { getsixstring } from "../api/randomstr";
 import agrement from "../components/agrement";
-import timeformate from "../api/timeFormat"
+import timeformate from "../api/timeFormat";
+import QRCode from 'qrcodejs2'
 export default {
   name: "appointment",
   components: { agrement },
@@ -610,6 +667,7 @@ export default {
       ifSearch:false,//保存是否已经查询的字段
       shareData:{},//保存微信分享的数据
       signData:{},//创建订单传回的数据
+      showTips:false,
       beforehandTable: [
         {
           name: "小明明",
@@ -635,10 +693,24 @@ export default {
           passworld: "15fsf5163515ad"
         }
       ],
+      codeShow:false,//验证码区域的显示隐藏
+      changeBtn:true,
+       restaurants: //存储输入的电话号码
+        [{ "value": "15179175377"},
+                    { "value": ""},
+                    { "value": ""},               
+       ],//电话号码显示的数组
       uid:'',//用户ID
+      timekeys:[],//预约时间的日期集合数组
+      orderTimeDay:'',//预约时间日期
+      timekeysIndex:0,//预约时间的日期集合数组的下标
+      upDays:true,//上一天按钮的是否禁用状态
+      nextDays:false,//下一天按钮的是否禁用状态
+      orderTimeArrs:[],//预约时间的数组集合
+      allOrderTimeArr:[],//所以天数预约时间的集合
       goodsidArr:[],//储存预约时间段的ID数组
       localUrl:window.location.href,//获取微信接口用到的本地url
-      orderTimeArr: [],//预约时间数组
+      orderTimeArr: [],//一天的预约时间数组
       wechatData:{},//微信用户信息
       isWeixin:false,//判断是否在微信浏览器
       obtainCode:'',//存储微信返回的code
@@ -647,25 +719,30 @@ export default {
       yudingdan: true, //预订单禁止选择
       timechoice: true, //时间选择禁止选择
       orderForbid:true,//预约处禁止选择
-      btndisabled_two: true, //下一步按钮禁用状态
       btndisabled_three: true, //下一步按钮禁用状态
       // btndisabled_four: true, //下一步按钮禁用状态
       statusCode: false,//控制验证码是否显示
       residueTime:30,//多少秒后重新获取
       firstSeeImg:true,//控制进入页面的遮罩层图片是否显示
       ImgCloseTime:5,//进入页面图片关闭倒计时
+      orderDetlies:false,//订单详细页的显示隐藏
+      tableDataOrdrList:[
+        {id:"118",order_sn:154165456451,order_name:'上午9:00-9:30',price:0.01},
+        {id:"124",order_sn:154141654165,order_name:'上午10:00-10:20',price:0.01},
+      ],//订单列表的展示
+      
     };
   },
 
   methods: {
-    next() {
-      //点击上下页
-      // if (this.active++ > 2) this.active = 0;
-      //先转为数字类型然后再转为字符串类型赋值
-      let nextNumber = +this.active1;
-      this.active1 = nextNumber + 1 + "";
-      document.documentElement.scrollTop = 0;
-    },
+    // next() {
+    //   //点击上下页
+    //   // if (this.active++ > 2) this.active = 0;
+    //   //先转为数字类型然后再转为字符串类型赋值
+    //   let nextNumber = +this.active1;
+    //   this.active1 = nextNumber + 1 + "";
+    //   document.documentElement.scrollTop = 0;
+    // },
     top() {
       let topNumber = +this.active1;
       this.active1 = topNumber - 1 + "";
@@ -673,20 +750,23 @@ export default {
     },
     //输入手机号码和验证码完成后向后台发送数据请求返回
     checkPhone() {
+         if(this.getCookie('cookies')){
+         this.timechoice=false;
+         this.active1='3';
+         }else{
          if(this.inputcheckNumber.length!=4){
           this.$message({
           showClose: true,
           message: "验证码为空或格式错误!",
           duration: 1000
         });
-       }else if(this.inputcheckNumber.length==4 && this.checkedAgreement){        
-         this.btndisabled_two=false;
-         this.timechoice=false;
-         this.active1='3';
+       }else if(this.inputcheckNumber.length==4 && this.checkedAgreement){ 
           this.sendPhoneAndIfo();//登陆验证
        }
+     }
     },
-      sendPhoneAndIfo(){ //手机验证码获取后登陆参数
+      sendPhoneAndIfo(){ 
+        //手机验证码获取后登陆参数
      let iuid= this.$route.query.iuid || '';
      let timeshare_id=this.$route.query.timeshare_id || '';
       let params = {
@@ -708,9 +788,11 @@ export default {
         console.log(res.data.data.token);
         let cookies = res.data.data.token;
          this.uid = res.data.data.uid;
-        this.setCookie('cookies',cookies,1);//设置cookies 有效时间为1天
+        this.setCookie('cookies',cookies,1);//设置后台获取的cookies 有效时间为1天
+        this.setCookie('phone1',this.inputphoneNumber,1);
         window.localStorage.setItem('uid', JSON.stringify(this.uid));
-        // this.active1="4";
+         this.timechoice=false;
+         this.active1='3';
          }else {
        this.$message({
           showClose: true,
@@ -770,10 +852,35 @@ export default {
           }
         })
      },
-    cliscksure() { //点击同意相关条款
+    cliscksure() {
+       //点击同意相关条款
       this.dialogVisible = true;
     },
+      querySearch(queryString, cb) {
+        var restaurants = this.restaurants;
+        var results = queryString ? restaurants.filter(this.createFilter(queryString)) : restaurants;
+        // 调用 callback 返回建议列表的数据
+        cb(results);
+      },
+        createFilter(queryString) {
+        return (restaurant) => {
+          return (restaurant.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0);
+        };
+      },
+       handleSelect(item) {
+        console.log(item,this.inputphoneNumber);
+        if(this.inputphoneNumber=="请先输入手机号码"){
+          this.inputphoneNumber="";
+          this.codeShow=true;
+        }
+      },
+      changePhoneNumber(){ //点击更换号码显示获取短信的相关按钮
+        this.codeShow=true;
+        this.inputphoneNumber='';
+        this.clearCookie("cookies");
+      },
     timechoese(value, i) {
+      //按钮改变的规则方法
       this.changrColor(value);
       this.changeRules(i, this.switchioes);
       // this.checkAllChoice(this.switchioes);
@@ -796,12 +903,14 @@ export default {
         timegrop[i].type = "success";
       } else {
         //  console.log("选中的第一个下标为----"+choeseindex,'第多次选中的下标为---'+i,'第一个有选中的下标为---'+unchoeseindex,this.switchioes.length);
-        for (let k = 0; k < timegrop.length; k++) { //重置按钮
+        for (let k = 0; k < timegrop.length; k++) { 
+          //重置按钮
           if (k != choeseindex && timegrop[k].checked==true) {
             timegrop[k].type = "success";
           }
         }
-        for (let j = choeseindex; j <= i; j++) { //将第一次选择的到第二次选择的之间的遍历
+        for (let j = choeseindex; j <= i; j++) {
+           //将第一次选择的到第二次选择的之间的遍历
           if(timegrop[j].checked!=true){
               timegrop[j].type = "primary";
           }
@@ -838,11 +947,12 @@ export default {
         priceAll += item.price * 100;
       });
       this.goodsidArr = goodsidArr;
-      console.log(goodsidArr);
+      // console.log(goodsidArr);
       
       
       //将选中的信息赋值给data中的数组
       this.orderTimeArr = priceArr;
+      console.log(priceArr);
       
       // this.beforehandTable[0].time = "未选中";
       //选中时间后的价格的计算
@@ -886,7 +996,8 @@ export default {
           ask_word: "name",
           ask_content: this.accurateInputValue
         };
-        http.findName(param).then(res => {//人名查找请求
+        http.findName(param).then(res => {
+          //人名查找请求
           console.log(res);
           console.log(res.data.data[0].infos[0]);
 
@@ -1043,8 +1154,10 @@ export default {
     },
     //点击放大二维码
     showDrawer() {
-      this.QRcode = !this.QRcode;
-      // console.log(1111111111111111);
+      // this.QRcode = !this.QRcode;
+
+      //  this.creatQrCode(this.orderPersoalIfo[0].room_url)
+      console.log(this.orderPersoalIfo[0]);
     },
     //点击发送或更换验证码
     changeCheckCode() {
@@ -1104,7 +1217,8 @@ export default {
       this.querytable=false;
      
     },
-    handleChangeName(val){//人名查找后点击选中表格中的数据
+    handleChangeName(val){
+      //人名查找后点击选中表格中的数据
       console.log(val);
       this.saveNameQueryData=val;
       if(val!=null){
@@ -1113,16 +1227,22 @@ export default {
          type: "success",
          duration: 2000
        });
-      this.beforehandTable[0]=val  
+      this.beforehandTable[0]=val;
+     window.localStorage.setItem('personIfo',JSON.stringify(val));
+     this.showTips=true;
       }
    
     },
-    handleCurrentChange(val){ //条件筛选后点击选中表格中的数据
+    handleCurrentChange(val){ 
+      //条件筛选后点击选中表格中的数据
       console.log(val);
       this.savePersonData=val;
-      this.beforehandTable[0]=val
+      this.beforehandTable[0]=val;
+       window.localStorage.setItem('personIfo',JSON.stringify(val));
+        this.showTips=true;
     },
-    PersonIfoName(){ //人名查找信息后点击完成按钮
+    PersonIfoName(){ 
+      //人名查找信息后点击完成按钮
     //  let keyItemsArr = Object.keys(this.saveNameQueryData)
       // console.log(keyItemsArr);
       if(this.saveNameQueryData!=null){
@@ -1139,10 +1259,9 @@ export default {
     },
     PersonIfoNameToback(){
       this.queryExaTable=false;
-
-
     },
-    setAgreement(eve) {//协议栏同意是否
+    setAgreement(eve) {
+      //协议栏同意是否
       // console.log(eve);
       this.dialogVisible = false;
       if (eve) {
@@ -1153,7 +1272,8 @@ export default {
         this.buttonType = "";
       }
     }, 
-    orderSubmit(){ //点击时间确认选择按钮向后台发送用户订单数据
+    orderSubmit(){ 
+      //点击时间确认选择按钮向后台发送用户订单数据
       if(this.goodsidArr.length!=0) {
         //点亮下一步按钮和预订单
         this.yudingdan=false;
@@ -1165,9 +1285,84 @@ export default {
              type: "warning",
              duration: 1000
             })
+      }              
+    },
+   upDay(){
+      //预约时间选择处的上一天 
+       this.nextDays=false;   
+      if(this.timekeysIndex==0){
+        this.upDays=true;
+        console.log('前进失败');
+        
+      }else if(0<this.timekeysIndex){
+         this.orderTimeDay=this.timekeys[this.timekeysIndex-1];
+         this.timekeysIndex= this.timekeysIndex-1
       }
+      console.log(this.timekeysIndex);
+         let newTimearr=[];
+         let objvalues=this.orderTimeArrs[this.timekeysIndex]
+         for(let i in objvalues){
+          newTimearr= objvalues[i];  
+         }
+         this.formateOrderTime(newTimearr) //处理时间的方法
+    },
+    nextDay(){
+      //预约时间选择处的下一天
       
-           
+      if(this.timekeysIndex==this.timekeys.length-1){
+      this.$message({
+      message: "到最后一天的预约时间了哦~",
+      type: "warning",
+       duration: 1000
+       })
+       this.nextDays=true;
+      }else if(this.timekeysIndex<this.timekeys.length-1){
+        this.orderTimeDay=this.timekeys[this.timekeysIndex+1];
+      this.timekeysIndex= this.timekeysIndex+1
+      }
+      this.upDays=false;
+      console.log(this.timekeysIndex); 
+         let newTimearr=[];
+         let objvalues=this.orderTimeArrs[this.timekeysIndex]
+         for(let i in objvalues){
+          newTimearr= objvalues[i];  
+         }
+        this.formateOrderTime(newTimearr) //处理时间的方法
+    //  this.allOrderTimeArr=this.allOrderTimeArr.concat(this.orderTimeArr);
+    //  console.log(this.allOrderTimeArr);
+     
+    },
+    formateOrderTime(tiemArrs){
+            
+      //处理按钮是否可以选择
+      tiemArrs.forEach(item=>{
+        item.storage-item.sold >0?item.checked=false : item.checked=true;
+        // item.storage-item.sold >0?item.type="success" : item.type="info";
+      })
+       tiemArrs.forEach(item=>{
+         item.checked?item.type="info":item.type="success"
+       })
+      //处理显示时间的格式问题 
+      tiemArrs.forEach(item=>{
+        let continuedTime= timeformate((parseInt(item.timepoint)+parseInt(item.timehold))*1000,'h:m')
+        let finalTime= timeformate(item.timepoint*1000,'h:m-')+continuedTime;
+        item.value=finalTime
+      })
+      //判断上午下午或是晚上
+       this.switchioes=[];
+         this.switchioesTwo=[]; this.switchioesThree=[];
+       tiemArrs.forEach(item=>{
+        let tiemH= timeformate(item.timepoint*1000,'h')
+         if(0<tiemH && tiemH<13) {
+           this.switchioes.push(item)
+         }else if(13<tiemH && tiemH<18) {
+           this.switchioesTwo.push(item)
+         }else if(18<=tiemH && tiemH<=24){
+          this.switchioesThree.push(item) 
+         }
+         
+       })
+      //  console.log(tiemArrs);
     },
     callpay(){
     if (typeof WeixinJSBridge == "undefined"){
@@ -1181,7 +1376,8 @@ export default {
           this.jsApiCall();
       }
     },
-    jsApiCall(){ //支付请求
+    jsApiCall(){ 
+      //支付请求
        WeixinJSBridge.invoke(
             'getBrandWCPayRequest',
             {
@@ -1194,13 +1390,26 @@ export default {
             },
         function(res){
         //  alert("取消才到这支付j断点"+res);
-         WeixinJSBridge.log(res.msg);
+         WeixinJSBridge.log(res);
+         if (res.err_msg == "get_brand_wcpay_request：ok") {
+           //支付成功的回调
+           alert("支付成功~~");
+             this.huizi=false;  
+              this.fullscreenLoading=true;
+              this.active1="5";
+              var vvm =this
+              setTimeout(() => {
+                vvm.fullscreenLoading=false
+              }, 5000);
+         }else if (res.err_msg == "get_brand_wcpay_request:cancel") {  
+     // message: "已取消微信支付!"
+    }
           console.log(res.code+ '\n' +res.desc+ '\n' +res.msg);
-        }
+   }
      );
     },
-    wechatPay(){//微信支付
-
+    wechatPay(){
+      //微信支付
       let postparm = {
         goods_id:(this.goodsidArr).toString(),
         anchor_id: this.beforehandTable[0].anchor_id,
@@ -1210,15 +1419,20 @@ export default {
         pay_way:"WXBROWSER",
         money:this.totalprice  
       }
-       if(this.isWeixin){ //判断是否在微信浏览器
-       http.getGoodsOrder(postparm).then(res=>{ //在微信浏览器
+       if(this.isWeixin){ 
+         //判断是否在微信浏览器
+       http.getGoodsOrder(postparm).then(res=>{
+          //在微信浏览器
         console.log(res);
-        if(res.data.code==200) { //订单创建成功
+        if(res.data.code==200) { 
+          //订单创建成功
            this.signData = JSON.parse(res.data.data); 
-           console.log(this.signData);    
+           console.log(this.signData);
+           this.getOrderListFn(this.inputphoneNumber);
              //发起支付
             this.callpay();
-        }else { //订单创建失败
+        }else { 
+          //订单创建失败
           this.$message({
               message: "订单创建失败",
                type: "warning",
@@ -1226,7 +1440,8 @@ export default {
           })
         }
       })
-     }else { //不在微信浏览器
+     }else { 
+       //不在微信浏览器
           let postparm1 ={
             goods_id:(this.goodsidArr).toString(),
             anchor_id:this.beforehandTable[0].anchor_id,
@@ -1252,13 +1467,53 @@ export default {
       console.log(postparm);
 
       // this.btndisabled_four=false;
-      this.huizi=false;  
-      this.fullscreenLoading=true
-      var vvm =this
-      setTimeout(() => {
-        vvm.fullscreenLoading=false
-      }, 5000);
     },
+    //支付完成后获取订单列表的
+     getOrderListFn(mobile) {
+       http.getOrderList(mobile).then(res=>{
+         console.log(res,"这是订单列表");
+         let orderList = res.data.data;
+          let newArr = []
+         orderList.forEach(item=>{
+           if(item!=""){
+             item.orderTime=timeformate(item.timepoint*1000,'Y-M-D-h-m');
+             newArr.push(item)
+           }
+         })
+         this.tableDataOrdrList=newArr
+         console.log(newArr);
+         
+       })
+    },
+    getOrderDetileFn(orderId){
+      http.getOrderDtile(orderId).then(res=>{
+        console.log(res,"这是订单详细");
+        let orderDetile = res.data.data;
+         orderDetile.forEach(item=>{ 
+           //格式化时间段
+        let continuedTime= timeformate((parseInt(item.timepoint)+parseInt(item.timehold))*1000,'h:m')
+        let finalTime= timeformate(item.timepoint*1000,'M月D日 h:m-')+continuedTime;
+        item.value=finalTime
+      })
+         orderDetile.forEach(item=>{ 
+           //处理性别问题
+              item.sex==1?item.sexes="男":item.sexes="女";
+      })
+        this.orderPersoalIfo=orderDetile;   
+        this.creatQrCode(orderDetile[0].room_url);
+       
+      })
+    },
+    creatQrCode(QRurl) {
+  var qrcode = new QRCode(this.$refs.qrCodeUrl, {
+      text: QRurl,
+      width: 160,
+      height: 160,
+      colorDark: '#000000',
+      colorLight: '#ffffff',
+      correctLevel: QRCode.CorrectLevel.H
+ })
+},
     ImgClosed(){ //图片关闭倒计时的方法
       	var vm = this;	
 					var timeId = setInterval(() => {
@@ -1286,7 +1541,7 @@ export default {
     },
     // 清除cookie
     clearCookie(name) {
-    setCookie(name, "", -1);
+    this.setCookie(name, "", -1);
     },
     // 取得cookie
     getCookie(name) {
@@ -1306,7 +1561,8 @@ export default {
     //获取微信授权的方法
     getwxReq(){
       //this.isWeixin && !this.getCookie("token") && !this.obtainCode
-      if( this.isWeixin && !this.obtainCode ){ //首次登陆没有token的情况下
+      if( this.isWeixin && !this.obtainCode ){
+         //首次登陆没有token的情况下
             http.getwxIfo(this.localUrl).then(res=>{
         console.log(res);
         window.location.href= res.data.data
@@ -1398,12 +1654,18 @@ export default {
                     }
            
       })
-      }
-    
-     
-      
-     
+      }             
     },
+  
+ 
+    OrderToBack(){ //订单详细页的显示
+      this.orderDetlies=false; 
+    },
+    orderListId(value){
+        //选择订单列表的展示
+       this.orderDetlies=true;
+      this.getOrderDetileFn(value.id);
+    }
 
   },
   created() {
@@ -1427,43 +1689,38 @@ export default {
      //获取显示预约时间列表
       http.getTimeArr(1).then(res=>{
         console.log(res, timeformate(1573522200000,'h:m'));
-       let tiemArrs=res.data.data[0].infos;
-      //  console.log(tiemArrs);
-      //处理按钮是否可以选择
-      tiemArrs.forEach(item=>{
-        item.storage-item.sold >0?item.checked=false : item.checked=true;
-        // item.storage-item.sold >0?item.type="success" : item.type="info";
-      })
-       tiemArrs.forEach(item=>{
-         item.checked?item.type="info":item.type="success"
+       this.orderTimeArrs=res.data.data;
+       let thatTimearr=res.data.data;
+       thatTimearr.forEach((item,i)=>{
+        this.timekeys=  this.timekeys.concat(Object.keys(item)) 
        })
-      //处理显示时间的格式问题 添加按钮的初始颜色
-      tiemArrs.forEach(item=>{
-        let continuedTime= timeformate((parseInt(item.timepoint)+parseInt(item.timehold))*1000,'h:m')
-        let finalTime= timeformate(item.timepoint*1000,'h:m-')+continuedTime;
-        item.value=finalTime
-      })
-      //判断上午下午或是晚上
-       this.switchioes=[];
-         this.switchioesTwo=[]; this.switchioesThree=[];
-       tiemArrs.forEach(item=>{
-        let tiemH= timeformate(item.timepoint*1000,'h')
-         if(0<tiemH && tiemH<13) {
-           this.switchioes.push(item)
-         }else if(13<tiemH && tiemH<18) {
-           this.switchioesTwo.push(item)
-         }else if(18<=tiemH && tiemH<=24){
-          this.switchioesThree.push(item) 
+        this.orderTimeDay=this.timekeys[0];//对预约时间处的初始时间进行赋值
+        // console.log(this.timekeys);
+         let objvalues=thatTimearr[0]
+         for(let i in objvalues){
+          thatTimearr= objvalues[i];
+           
          }
-         
-       })
-      //  console.log(tiemArrs);
+          this.formateOrderTime(thatTimearr)
        
       })
-    
+    this.restaurants[0].value=this.getCookie('phone1') ||'';
+    if(this.getCookie('cookies')){
+      //判断是否已经获取到cookies
+      this.codeShow=false;
+       this.checkedAgreement = true;
+       this.inputphoneNumber=this.getCookie('phone1');
+       this.restaurants[2].value="";
+       this.changeBtn=true;
+    }else{
+     this.codeShow=true;
+     this.restaurants[2].value="请先输入手机号码";
+     this.changeBtn=false;
+    }
     // 生成6为随机码
     // window.console.log(getsixstring());
-
+    
+        //  this.getOrderDetileFn(118);
   },
   mounted(){
         // 判断是否是微信浏览器
@@ -1487,7 +1744,7 @@ export default {
           this.setCookie('openid', this.wechatData.openid, 7); //openId 七天有效时间
         })
       }
-     
+    
      this.wxshareFn()//微信分享
      this.uid=JSON.parse(window.localStorage.getItem("uid")) ||'' ; //获取分享的uid
   },
@@ -1632,6 +1889,10 @@ export default {
 .timeChoese .clearfix {
   position: relative;
 }
+.timeChoese .timeChoese-btn{
+  margin-left: 15%;
+  margin-bottom: 20px;
+}
 
 .box-card .timeChoeseMoring {
   float: left;
@@ -1692,14 +1953,14 @@ export default {
 .beforehandOrder .timechice-show {
   margin-bottom: 20px;
 }
-.beforehandOrder .timechice-show .orderTag {
+/* .beforehandOrder .timechice-show .orderTag {
     display: flex;
   flex-wrap: wrap;
   justify-content: space-around;
 }
 .beforehandOrder .timechice-show .orderTag span {
     margin-bottom: 10px;
-}
+} */
 .beforehandOrder .timechice-show .price_bef{
   color: red;
   font-size: 10px;
@@ -1723,7 +1984,10 @@ export default {
 .orderSuccess .orderTag span {
   margin-bottom: 10px;
 }
-.orderSuccess .thatcode img {
+.orderSuccess .thatcode  {
+  width: 160px;
+  height: 160px;
+  overflow: hidden;
   display: block;
   margin: 0 auto;
 }
@@ -1769,5 +2033,8 @@ export default {
     color: #FFF;
     background-color: #CCC;
     border-color: #CCC;
+}
+.el-tabs__nav-scroll .el-tabs__header .el-tabs__nav .el-tabs__item,div{
+  padding-right: 5px;
 }
 </style>
